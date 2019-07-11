@@ -1,0 +1,42 @@
+{
+  "name": "No Imperial Amazon",
+  "short_name": "No Imperial Amazon",
+
+  "author":"dangeredwolf",
+
+  "description": "__MSG_description__",
+
+  "version": "7.3.7",
+
+  "default_locale":"en",
+
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "https://*.amazon.com/",
+    "tabs",
+    "storage"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["https://*.amazon.com/dp/*"],
+      "js": ["extension/MTDLoad.js"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "icons": {
+   },
+
+  "web_accessible_resources": [
+    "sources",
+    "sources/*",
+    "sources/cssextensions/*",
+    "sources/fonts/*",
+    "sources/libraries/*",
+    "sources/img/*"
+  ],
+
+  "manifest_version": 2
+}
