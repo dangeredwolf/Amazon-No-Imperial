@@ -266,11 +266,19 @@ function convertMil(mil) {
 function convertFeet(feet) {
 	let conversion = roundMe(feet * 0.3048);
 
+	let result = ""
+
 	if (conversion >= 1) {
-		return conversion + " m "
+		result = conversion + " m "
 	} else {
-		return roundMe10(conversion*100) + " cm "
+		result = roundMe10(conversion*100) + " cm "
 	}
+
+	if (result === "3.05 m ") {
+		return "3 m"
+	}
+
+	return result;
 }
 
 function roundMe(val) {
