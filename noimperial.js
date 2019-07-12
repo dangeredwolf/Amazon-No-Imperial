@@ -279,11 +279,22 @@ function roundMe(val) {
 	}
 	let rounded = Math.floor((val * 100) + .5)/100;
 
-	return ;
+	if (rounded === NaN) {
+		console.error('what (roundMe)');
+		console.error(val);
+	}
+	return rounded;
 }
 
 function roundMe10(val) {
-	return Math.floor((val * 10) + .5)/10;
+	let rounded = Math.floor((val * 10) + .5)/10;
+
+	if (rounded === NaN) {
+		console.error('what (roundMe10)');
+		console.error(val);
+	}
+
+	return rounded;
 }
 
 function metricateStr(str) {
@@ -423,6 +434,12 @@ function metricateStr(str) {
 
 	jQuery(findFeet(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (num === NaN) {
+			console.error("what");
+			console.error(b);
+			console.error(num);
+		}
 
 		str = str.replace(b,convertFeet(num))
 	})
