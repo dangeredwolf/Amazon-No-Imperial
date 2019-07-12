@@ -48,7 +48,7 @@ function findInchArray(str) {
 }
 
 function findFeet(str) {
-	return str.match(/((\d|\.)+(\'))|((\d|\.)+\s?(x|\*|by)\s?)?((\d|\.)+ ?(x|\*\ ) ?)?(\d|\.)+(\s|-)?(feet|foot|ft|Feet|Foot|\')/g)
+	return str.match(/((\d|\.)+(\'))|((\d|\.)+\s?(x|\*|by)\s?)?((\d|\.)+ ?(x|\*\ ) ?)?(\d|\.)+(\s|-)?(feet|foot|ft|Feet|Foot|\'|FT|Ft)/g)
 }
 
 function findOunce(str) {
@@ -239,14 +239,22 @@ function convertLbs(lbs) {
 
 function convertInch(inch) {
 	let conversion = roundMe(inch * 25.4);
-
+	let result = "";
 	if (conversion >= 1000) {
-		return roundMe(conversion/1000) + " m "
+		result = roundMe(conversion/1000) + " m "
 	} else if (conversion > 100) {
-		return roundMe10(conversion/10) + " cm "
+		result = roundMe10(conversion/10) + " cm "
 	} else {
-		return Math.floor(conversion) + " mm "
+		result = Math.floor(conversion) + " mm "
 	}
+
+	if (result === "9 mm ") { // hack to get around rounding errors
+		return "10 mm ";
+	}
+	if (result === "99 mm ") { // hack to get around rounding errors
+		return "100 mm ";
+	}
+	return result
 }
 
 function convertMil(mil) {
@@ -261,12 +269,17 @@ function convertFeet(feet) {
 	if (conversion >= 1) {
 		return conversion + " m "
 	} else {
-		return roundMe10(conversion/100) + " cm "
+		return roundMe10(conversion*100) + " cm "
 	}
 }
 
 function roundMe(val) {
-	return Math.floor((val * 100) + .5)/100;
+	if (val > 10) {
+		return roundMe10(val)
+	}
+	let rounded = Math.floor((val * 100) + .5)/100;
+
+	return ;
 }
 
 function roundMe10(val) {
@@ -275,10 +288,55 @@ function roundMe10(val) {
 
 function metricateStr(str) {
 
+	// get rid of fractions
+	if (findInch(str) !== null) {
+		console.log(str)
+
+		str = str.replace(/\-?1 ?\/ ?2/g,".5");
+		str = str.replace(/\-?1 ?\/ ?3/g,".333333");
+		str = str.replace(/\-?2 ?\/ ?3/g,".666666");
+		str = str.replace(/\-?1 ?\/ ?4/g,".25");
+		str = str.replace(/\-?1 ?\/ ?5/g,".2");
+		str = str.replace(/\-?2 ?\/ ?5/g,".4");
+		str = str.replace(/\-?3 ?\/ ?5/g,".6");
+		str = str.replace(/\-?4 ?\/ ?5/g,".8");
+		str = str.replace(/\-?1 ?\/ ?6/g,".166667");
+		str = str.replace(/\-?1 ?\/ ?7/g,".142857");
+		str = str.replace(/\-?2 ?\/ ?7/g,".285714");
+		str = str.replace(/\-?3 ?\/ ?7/g,".428571");
+		str = str.replace(/\-?4 ?\/ ?7/g,".571428");
+		str = str.replace(/\-?5 ?\/ ?7/g,".714285");
+		str = str.replace(/\-?6 ?\/ ?7/g,".857143");
+		str = str.replace(/\-?1 ?\/ ?8/g,".125");
+		str = str.replace(/\-?2 ?\/ ?8/g,".25");
+		str = str.replace(/\-?3 ?\/ ?8/g,".375");
+		str = str.replace(/\-?5 ?\/ ?8/g,".625");
+		str = str.replace(/\-?7 ?\/ ?8/g,".875");
+		str = str.replace(/\-?1 ?\/ ?12/g,".083333");
+		str = str.replace(/\-?5 ?\/ ?12/g,".416667");
+		str = str.replace(/\-?7 ?\/ ?12/g,".583333");
+		str = str.replace(/\-?11 ?\/ ?12/g,".916667");
+		str = str.replace(/\-?1 ?\/ ?16/g,".0625");
+		str = str.replace(/\-?2 ?\/ ?16/g,".125");
+		str = str.replace(/\-?3 ?\/ ?16/g,".1875");
+		str = str.replace(/\-?4 ?\/ ?16/g,".25");
+		str = str.replace(/\-?5 ?\/ ?16/g,".3125");
+		str = str.replace(/\-?6 ?\/ ?16/g,".375");
+		str = str.replace(/\-?7 ?\/ ?16/g,".4375");
+		str = str.replace(/\-?8 ?\/ ?16/g,".5");
+		str = str.replace(/\-?9 ?\/ ?16/g,".5625");
+		str = str.replace(/\-?10 ?\/ ?16/g,".625");
+		str = str.replace(/\-?11 ?\/ ?16/g,".6825");
+		str = str.replace(/\-?12 ?\/ ?16/g,".75");
+		str = str.replace(/\-?13 ?\/ ?16/g,".75");
+		str = str.replace(/\-?13 ?\/ ?16/g,".8125");
+		str = str.replace(/\-?14 ?\/ ?16/g,".875");
+		str = str.replace(/\-?15 ?\/ ?16/g,".9375");
+
+	}
+
 	jQuery(findInchArray(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
-
-		console.log(str)
 
 		b = b.replace(/\s?(inches|inch|in)/g,"");
 
@@ -287,7 +345,6 @@ function metricateStr(str) {
 			str = str.replace(d,convertInch(num2));
 		})
 
-		console.log(str)
 	})
 
 	jQuery(findPerPound(str)).each((a,b) => {
