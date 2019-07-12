@@ -20,9 +20,9 @@
 
   "content_scripts": [
     {
-      "matches": ["https://*.amazon.com/dp/*"],
+      "matches": ["https://*.amazon.com/*"],
       "js": ["load.js"],
-      "run_at": "document_end"
+      "run_at": "document_start"
     }
   ],
 
@@ -30,7 +30,8 @@
    },
 
   "web_accessible_resources": [
-    "noimperial.js"
+    "noimperial.js",
+    "jquery.min.js"
   ],
 
   "manifest_version": 2
