@@ -51,11 +51,11 @@ function findFeet(str) {
 }
 
 function findOunce(str) {
-	return str.match(/(\d|\.)+.?(oz|ounces?|Ounces?|Oz|OZ)/g)
+	return str.match(/(\d|\.)+.?(oz.?|ounces?|Ounces?|Oz.?|OZ.?)/g)
 }
 
 function findFluidOunce(str) {
-	return str.match(/(\d|\.)+\s?(fl.? oz.?|floz|fluid oz.?|fluid ounces?|Fluid ounces?|fluid Ounces?|Fluid Ounces?|fl.? ounces?|Fl.? ?Oz.?|FL.? OZ.?)/g)
+	return str.match(/(\d|\.)+\s?(fl.? oz.?|floz|fluid oz.?|fluid ounces?|Fluid ounces?|fluid Ounces?|Fluid Ounces?|fl.? ounces?|Fl.? ?Oz.?|Fl.? ?oz.?|FL.? OZ.?)/g)
 }
 
 function findCubicFoot(str) {
@@ -83,7 +83,7 @@ function findPerPound(str) {
 }
 
 function findPerOunce(str) {
-	return str.match(/\(\$(\d|\.)+ \/ ? ?Ounce\)/g)
+	return str.match(/\(\$(\d|\.)+ \/ ?Ounce\)/g)
 }
 
 function findPerFluidOunce(str) {
@@ -176,6 +176,9 @@ function convertFluidOunce(ounce) {
 		}
 		if (temp === "202 mL ") { // hack to get around rounding errors
 			return "200 mL ";
+		}
+		if (temp === "249 mL ") { // hack to get around rounding errors
+			return "250 mL ";
 		}
 		if (temp === "237 mL ") { // hack to use US legal cup
 			return "240 mL ";
@@ -366,7 +369,7 @@ function metricateStr(str) {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		if ( // We have to do some inferencing because "ounce" is ambiguous
-		str.match(/(tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth)/g) !== null
+		str.match(/(tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Creamer)/g) !== null
 		&&
 		str.match(/(powder|Powder|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g) === null
 		) {
