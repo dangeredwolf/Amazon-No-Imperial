@@ -10,8 +10,8 @@
 'use strict';
 
 let baseUrl;
-let matchStr = ".a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.sponsored-products-truncator-truncated,.a-spacing-mini,#prodDetails strong,#productDescription strong";
-
+let matchStr = ".a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.sponsored-products-truncator-truncated,.a-spacing-mini,#prodDetails strong,#productDescription strong";
+let excludeStr = ".sims-fbt-image-box,.a-section,.issuance-banner li,#ap-options,[data-action=\"main-image-click\"],.a-button-input,.a-button,.a-button-inner,.a-price,.a-profile,.abb-selected-variation,.abb-option>.a-list-item,.a-radio";
 const SystemVersion = "7.3.7";
 
 if (typeof urlExchange === "object" && typeof urlExchange.getAttribute === "function") {
@@ -40,11 +40,11 @@ function findFeet(str) {
 }
 
 function findOunce(str) {
-	return str.match(/(\d|\.)+\s?(oz|ounces?)/g)
+	return str.match(/(\d|\.)+.?(oz|ounces?|Ounces?|Oz|OZ)/g)
 }
 
 function findFluidOunce(str) {
-	return str.match(/(\d|\.)+\s?(fl oz|floz|fluid oz|fluid ounces?|fl ounces?)/g)
+	return str.match(/(\d|\.)+\s?(fl.? oz.?|floz|fluid oz.?|fluid ounces?|Fluid ounces?|Fluid Ounces?|fl.? ounces?|Fl.? ?Oz.?)/g)
 }
 
 function findCubicFoot(str) {
@@ -56,7 +56,19 @@ function findCubicInch(str) {
 }
 
 function findPound(str) {
-	return str.match(/(\d|\.)+\s?(lbs?|pounds?)/g)
+	return str.match(/(\d|\.)+.?(lbs?|pounds?|Pounds?|LBS?|Lbs?)/g)
+}
+
+function findPerPound(str) {
+	return str.match(/\(\$(\d|\.)+ \/  ?Pound\)/g)
+}
+
+function findPerOunce(str) {
+	return str.match(/\(\$(\d|\.)+ \/  ?Ounce\)/g)
+}
+
+function findPerFluidOunce(str) {
+	return str.match(/\(\$(\d|\.)+ ? ?\/ ? ?Fl Oz\)/g)
 }
 
 function convertCubicFoot(cuft) {
@@ -81,6 +93,17 @@ function convertCubicInch(cuin) {
 	}
 }
 
+function convertFluidOunce(ounce) {
+	console.log(ounce)
+	let conversion = roundMe(ounce * 29.5735);
+
+	if (conversion > 1000) {
+		return roundMe(conversion/1000) + " L "
+	} else {
+		return Math.floor(conversion+.5) + " mL "
+	}
+}
+
 function convertOunce(ounce) {
 	console.log(ounce)
 	let conversion = roundMe(ounce * 28.35);
@@ -88,8 +111,29 @@ function convertOunce(ounce) {
 	if (conversion > 1000) {
 		return roundMe(conversion/1000) + " kg"
 	} else {
-		return Math.floor(conversion) + " g"
+		return Math.floor(conversion+.5) + " g"
 	}
+}
+
+function convertPerFluidOunce(ounce) {
+	console.log(ounce)
+	let conversion = roundMe(ounce / 0.029573509718662);
+
+	return "($" + roundMe(conversion) + " / L)"
+}
+
+function convertPerOunce(ounce) {
+	console.log(ounce)
+	let conversion = roundMe(ounce / 0.0283495);
+
+	return "($" + roundMe(conversion) + " / kg)"
+}
+
+function convertPerPound(pound) {
+	console.log(pound)
+	let conversion = roundMe(pound / 0.453592);
+
+	return "$" + roundMe(conversion) + " / kg"
 }
 
 function convertLbs(lbs) {
@@ -99,14 +143,16 @@ function convertLbs(lbs) {
 	if (conversion > 1000) {
 		return roundMe(conversion/1000) + " kg "
 	} else {
-		return Math.floor(conversion) + " g "
+		return Math.floor(conversion+.5) + " g "
 	}
 }
 
 function convertInch(inch) {
 	let conversion = roundMe(inch * 25.4);
 
-	if (conversion > 100) {
+	if (conversion > 1000) {
+		return roundMe(conversion/1000) + " m "
+	} else if (conversion > 400) {
 		return roundMe10(conversion/10) + " cm "
 	} else {
 		return Math.floor(conversion) + " mm "
@@ -134,14 +180,14 @@ function roundMe10(val) {
 function metricateStr(str) {
 	let findInArray = findInchArray(str);
 
-	$(findInArray).each((a,b) => {
+	jQuery(findInArray).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		console.log(str)
 
 		b = b.replace(/\s?(inches|inch|in)/g,"");
 
-		$(b.match(/(\d|\.)+/g)).each((c,d) => {
+		jQuery(b.match(/(\d|\.)+/g)).each((c,d) => {
 			let num2 = parseFloat(d.match(/(\d|\.)+/g));
 			str = str.replace(d,convertInch(num2));
 		})
@@ -149,9 +195,33 @@ function metricateStr(str) {
 		console.log(str)
 	})
 
+	let findPPOz = findPerOunce(str);
+
+	jQuery(findPPOz).each((a,b) => {
+		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		str = str.replace(b,convertPerOunce(num))
+	})
+
+	let findPPFlOz = findPerFluidOunce(str);
+
+	jQuery(findPPFlOz).each((a,b) => {
+		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		str = str.replace(b,convertPerFluidOunce(num))
+	})
+
+	let findFlOz = findFluidOunce(str);
+
+	jQuery(findFlOz).each((a,b) => {
+		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		str = str.replace(b,convertFluidOunce(num))
+	})
+
 	let findIn = findInch(str);
 
-	$(findIn).each((a,b) => {
+	jQuery(findIn).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		str = str.replace(b,convertInch(num))
@@ -159,7 +229,7 @@ function metricateStr(str) {
 
 	let findCuIn = findCubicInch(str);
 
-	$(findCuIn).each((a,b) => {
+	jQuery(findCuIn).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		str = str.replace(b,convertCubicInch(num))
@@ -167,7 +237,7 @@ function metricateStr(str) {
 
 	let findCuFt = findCubicFoot(str);
 
-	$(findCuFt).each((a,b) => {
+	jQuery(findCuFt).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		str = str.replace(b,convertCubicFoot(num))
@@ -175,7 +245,7 @@ function metricateStr(str) {
 
 	let findFt = findFeet(str);
 
-	$(findFt).each((a,b) => {
+	jQuery(findFt).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		str = str.replace(b,convertFeet(num))
@@ -183,8 +253,17 @@ function metricateStr(str) {
 
 	let findOz = findOunce(str);
 
-	$(findOz).each((a,b) => {
+	jQuery(findOz).each((a,b) => {
+
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if ( // We have to do some inferencing because "ounce" is ambiguous
+		str.match(/(tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi)/g) !== null
+		&&
+		str.match(/(powder|Powder|Candy|Candies|candies|candy|gum|Gum)/g) === null
+		) {
+			str = str.replace(b,convertFluidOunce(num));
+		}
 
 		str = str.replace(b,convertOunce(num));
 		console.log(convertOunce(num))
@@ -192,14 +271,14 @@ function metricateStr(str) {
 
 	let findLb = findPound(str);
 
-	$(findLb).each((a,b) => {
+	jQuery(findLb).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		str = str.replace(b,convertLbs(num));
 	})
 
 
-	str = str.replace(/\s?(inches|inch)/g,"").replace(/cm  ?in/g,"cm").replace(/mm  ?in/g,"mm");
+	str = str.replace(/\s?(inches|inch)/g,"").replace(/cm  ?in/g,"cm").replace(/cm  ?Inch(es)?/g,"cm").replace(/cm  ?inch(es)?/g,"cm").replace(/mm  ?in/g,"mm");
 
 	return str;
 }
@@ -214,58 +293,65 @@ function canMetricate(str) {
 }
 
 
-var g_bannedtags = ['STYLE', 'SCRIPT', 'NOSCRIPT', 'TEXTAREA', 'IFRAME', 'IMG', 'I', 'DIV', 'TBODY', 'IMG'];
+var g_bannedtags = ['STYLE', 'SCRIPT', 'NOSCRIPT', 'TEXTAREA', 'IFRAME', 'IMG', 'I', 'DIV', 'TBODY', 'IMG', 'LABEL'];
 
 function metricateObj(obj) {
 	if (typeof obj === "undefined") {
 		return;
 	}
 
-	if (!$(obj).is(matchStr)) {
+	if (!jQuery(obj).is(matchStr)) {
 		//return
 	}
 
 	if (typeof obj.attributeName !== "undefined") {
-		$(obj.addedNodes).each((a,b) => metricateObj($(b)));
+		jQuery(obj.addedNodes).each((a,b) => metricateObj(jQuery(b)));
 		return;
 	}
 
-	if (typeof $(obj).contents() === "undefined" || $(obj).contents().length <= 0) {
+	if (typeof jQuery(obj).contents() === "undefined" || jQuery(obj).contents().length <= 0) {
 		return;
 	}
 
-	$(obj).contents().each((a,b) => {
+	jQuery(obj).contents().each((a,b) => {
 
-		if ($(b).is("[data-action=\"main-image-click\"],.a-button-input,.a-button,.a-button-inner,.a-price,.a-profile,.abb-selected-variation,.abb-option>.a-list-item")) {
-			return;
+		try {
+			if (typeof b !== "string" && jQuery(b).is(excludeStr)) {
+				return;
+			}
+		} catch(e) {
+			//console.error(b)
 		}
 
 		if (typeof b.textContent !== "undefined") {
 
-		if ($.inArray(b.tagName, g_bannedtags) !== -1 ) return;
+			if ($.inArray(b.tagName, g_bannedtags) !== -1 ) return;
+
 			if (canMetricate(b.textContent))
 				b.textContent = metricateStr(b.textContent)
-		} else {
-			metricateObj($(b));
+				//jQuery(b).html(metricateStr(jQuery(b).html()))
+			} else {
+				metricateObj(jQuery(b));
+			}
 		}
-	})
-
-	$(obj).contents()
+	)
 }
 
 function onjQueryAvailable() {
-	if (typeof $ === "undefined") {
+	if (typeof jQuery === "undefined") {
 		setTimeout(onjQueryAvailable,10);
 		return;
 	}
 
-	$(matchStr).each(
-		(a,b) => metricateObj($(b))
+	jQuery(matchStr).each(
+		(a,b) => metricateObj(jQuery(b))
 	)
 
 	setInterval(() => {
-		$(matchStr).each(
-			(a,b) => metricateObj($(b))
+		window.$ = jQuery;
+		var $ = jQuery;
+		jQuery(matchStr).each(
+			(a,b) => metricateObj(jQuery(b))
 		)
 	},1000)
 }
