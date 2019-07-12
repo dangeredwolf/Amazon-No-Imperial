@@ -10,9 +10,10 @@
 'use strict';
 
 let baseUrl;
-let matchStr = "#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.sponsored-products-truncator-truncated,.a-spacing-mini,#prodDetails strong,#productDescription strong";
-let excludeStr = ".issuance-banner a,span[data-component-type=\"s-in-cart-badge-component\"],.sims-fbt-image-box,.zg-text-center-align,.a-section,.issuance-banner li,#ap-options,[data-action=\"main-image-click\"],.a-button-input,.a-button,.a-button-inner,.a-price,.a-profile,.abb-selected-variation,.abb-option>.a-list-item,.a-radio";
-const SystemVersion = "7.3.7";
+let matchStr = ".shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.sponsored-products-truncator-truncated,.a-spacing-mini,#prodDetails strong,#productDescription strong";
+let excludeStr = ".p13n-asin>span,.p13n-asin>span>span,.sims-fbt-seller-info,.sims-fbt-checkbox-label,.sims-fbt-image-box>li,.sims-fbt-image-box>li>span,.sims-fbt-image-box>li>span>a,.feed-carousel-card>span,.feed-carousel-card>span>a,.feed-carousel-card,.feed-carousel-shelf,.issuance-banner a,span[data-component-type=\"s-in-cart-badge-component\"],.sims-fbt-image-box,.zg-text-center-align,.a-section,.issuance-banner li,#ap-options,[data-action=\"main-image-click\"],.a-button-input,.a-button,.a-button-inner,.a-price,.a-profile,.abb-selected-variation,.abb-option>.a-list-item,.a-radio";
+let disabled = false;
+let pollingRate = 1000; // 1s
 
 if (typeof urlExchange === "object" && typeof urlExchange.getAttribute === "function") {
 	baseUrl = urlExchange.getAttribute("type");
@@ -24,7 +25,7 @@ function findNumbers(str) {
 }
 
 function findMil(str) {
-	return str.match(/(\d|\.)+(\s|-)?(mil)/g)
+	return str.match(/(\d|\.)+(\s|-)?(mil)[^l]/g)
 }
 
 function findInch(str) {
@@ -51,11 +52,11 @@ function findFeet(str) {
 }
 
 function findOunce(str) {
-	return str.match(/(\d|\.)+.?(oz.?|ounces?|Ounces?|Oz.?|OZ.?)/g)
+	return str.match(/(\d|\.)+(\s|-)?(oz\.?|ounces?|Ounces?|Oz\.?|OZ\.?)/g)
 }
 
 function findFluidOunce(str) {
-	return str.match(/(\d|\.)+\s?(fl.? oz.?|floz|fluid oz.?|fluid ounces?|Fluid ounces?|fluid Ounces?|Fluid Ounces?|fl.? ounces?|Fl.? ?Oz.?|Fl.? ?oz.?|FL.? OZ.?)/g)
+	return str.match(/(\d|\.)+\s?(fl.? oz.?|floz|fluid oz.?|fluid ounc?e?s?|Fluid ounc?e?s?|fluid Ounc?e?s?|Fluid Ounc?e?s?|fl\.? ounc?e?s?|Fl\.? ?Oz\.?|Fl\.? ?oz\.?|FL\.? OZ\.?)/g)
 }
 
 function findCubicFoot(str) {
@@ -71,7 +72,7 @@ function findSquareFoot(str) {
 }
 
 function findSquareInch(str) {
-	return str.match(/(\d|\.)+.?(sq in|square.inches|square.inch|Square.inches|Square.inch|Square.inches|Square.inch|SQ IN|Sq In)/g)
+	return str.match(/(\d|\.)+.?(sq\.? in\.?|square.inches|square.inch|Square.inches|Square.inch|Square.inches|Square.inch|SQ IN|Sq\.? In\.?)/g)
 }
 
 function findPound(str) {
@@ -83,11 +84,11 @@ function findPerPound(str) {
 }
 
 function findPerOunce(str) {
-	return str.match(/\(\$(\d|\.)+ \/ ?Ounce\)/g)
+	return str.match(/\(\$(\d|\.)+ ?\/ ? ?Ounce\)/g)
 }
 
 function findPerFluidOunce(str) {
-	return str.match(/\(\$(\d|\.)+ ? ?\/ ? ?Fl Oz\)/g)
+	return str.match(/\(\$(\d|\.)+ ? ?\/ ? ?(Fl Oz|oz)\)/g)
 }
 
 function convertCubicFoot(cuft) {
@@ -165,6 +166,9 @@ function convertFluidOunce(ounce) {
 	} else {
 		let temp = Math.ceil(conversion) + " mL ";
 
+		if (temp === "148 mL ") { // hack to get around rounding errors
+			return "150 mL ";
+		}
 		if (temp === "252 mL ") { // hack to get around rounding errors
 			return "250 mL ";
 		}
@@ -289,13 +293,15 @@ function metricateStr(str) {
 	jQuery(findPerPound(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
-		str = str.replace(b,convertPerPound(num))
+		str = str.replace(b,convertPerPound(num));
+		console.log(str);
 	})
 
 	jQuery(findPerOunce(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
-		str = str.replace(b,convertPerOunce(num))
+		str = str.replace(b,convertPerOunce(num));
+		console.log(str);
 	})
 
 	jQuery(findPerFluidOunce(str)).each((a,b) => {
@@ -369,7 +375,7 @@ function metricateStr(str) {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		if ( // We have to do some inferencing because "ounce" is ambiguous
-		str.match(/(tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Creamer)/g) !== null
+		str.match(/(tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Cream(er)?|Conditioner|Smoothie|Moisturizer|CC Creme|Gel|gel)/g) !== null
 		&&
 		str.match(/(powder|Powder|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g) === null
 		) {
@@ -387,7 +393,7 @@ function metricateStr(str) {
 	})
 
 
-	str = str.replace(/\s?(inches|inch)/g,"").replace(/cm  ?in/g,"cm").replace(/cm  ?Inch(es)?/g,"cm").replace(/cm  ?inch(es)?/g,"cm").replace(/mm  ?in/g,"mm").replace(/50 mm 1/g,"2 in 1");
+	str = str.replace(/\s?(inches|inch)/g,"").replace(/cm  ?in/g,"cm").replace(/cm  ?Inch(es)?/g,"cm").replace(/cm  ?inch(es)?/g,"cm").replace(/mm  ?in/g,"mm").replace(/50 mm ? 1/g,"2 in 1").replace(/50 mm ? ?-1/g,"2-in-1").replace(/76 mm ? 1/g,"3 in 1").replace(/76 mm ? ?-1/g,"3-in-1");
 
 	return str;
 }
@@ -447,6 +453,10 @@ function metricateObj(obj) {
 }
 
 function onjQueryAvailable() {
+	if (disabled) {
+		return;
+	}
+
 	if (typeof jQuery === "undefined") {
 		setTimeout(onjQueryAvailable,10);
 		return;
@@ -462,7 +472,7 @@ function onjQueryAvailable() {
 		jQuery(matchStr).each(
 			(a,b) => metricateObj(jQuery(b))
 		)
-	},1000)
+	},pollingRate)
 }
 
 onjQueryAvailable();
