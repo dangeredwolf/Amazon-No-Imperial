@@ -219,12 +219,12 @@ function convertGPM(gal) {
 
 function convertQuart(qt) {
 	console.log(qt)
-	let conversion = roundMe10(qt * 0.946353);
+	let conversion = roundMe10(qt * 946.353);
 
 	if (conversion >= 1) {
 		return conversion + " L"
 	} else {
-		return Math.floor(conversion*1000) + " mL"
+		return Math.floor(conversion) + " mL"
 	}
 }
 
