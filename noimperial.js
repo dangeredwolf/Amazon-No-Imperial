@@ -10,7 +10,7 @@
 'use strict';
 
 let baseUrl;
-let matchStr = ".aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.sponsored-products-truncator-truncated,.a-spacing-mini,#prodDetails strong,#productDescription strong";
+let matchStr = ".sims-fbt-checkbox-label>span:not(.sims-fbt-this-item),.aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.sponsored-products-truncator-truncated,.a-spacing-mini,#prodDetails strong,#productDescription strong";
 let excludeStr = ".p13n-asin>span,.p13n-asin>span>span,.sims-fbt-seller-info,.sims-fbt-checkbox-label,.sims-fbt-image-box>li,.sims-fbt-image-box>li>span,.sims-fbt-image-box>li>span>a,.feed-carousel-card>span,.feed-carousel-card>span>a,.feed-carousel-card,.feed-carousel-shelf,.issuance-banner a,span[data-component-type=\"s-in-cart-badge-component\"],.sims-fbt-image-box,.zg-text-center-align,.a-section,.issuance-banner li,#ap-options,[data-action=\"main-image-click\"],.a-button-input,.a-button,.a-button-inner,.a-price,.a-profile,.abb-selected-variation,.abb-option>.a-list-item,.a-radio";
 let disabled = false;
 let pollingRate = 1000; // 1s
@@ -32,11 +32,15 @@ function findInch(str) {
 	if (str.match(/\d\d\d\d in/g) !== null) { // no years in
 		return null;
 	}
-	return str.match(/(\d|\.| ?½)+(\s|-)?(inches|inch|in\.?|Inches|Inch|”|\")/g)
+	return str.match(/(\d|\.| ?½)+(\s|-)?(inches|inch|in\.?|Inches|Inch|”|In\.?|\")/g)
 }
 
 function findGallon(str) {
 	return str.match(/(\d|\.)+(\s|-)?(Gallons?|gallons?|gal\.?|Gal\.?)/g)
+}
+
+function findGPM(str) {
+	return str.match(/(\d|\.)+(\s|-)?(GPM|gpm|Gpm)/g)
 }
 
 function findQuart(str) {
@@ -52,7 +56,7 @@ function findFeet(str) {
 }
 
 function findOunce(str) {
-	return str.match(/(\d|\.)+(\s|-)?(oz\.?|ounces?|Ounces?|Oz\.?|OZ\.?)/g)
+	return str.match(/(\d|\.)+(\s|-)+?(oz\.?|ounces?|Ounces?|Oz\.?|OZ\.?)/g)
 }
 
 function findFluidOunce(str) {
@@ -80,7 +84,7 @@ function findSquareInch(str) {
 }
 
 function findPound(str) {
-	return str.match(/(\d|\.)+.?(lbs?|pounds?|Pounds?|LBS?|Lbs?)/g)
+	return str.match(/(\d|\.)+(\s)+?(lbs?|pounds?|Pounds?|LBS?|Lbs?)/g)
 }
 
 function findPerPound(str) {
@@ -104,7 +108,7 @@ function findMiles(str) {
 }
 
 function findFahrenheit(str) {
-	return str.match(/((\d)+ ?(-|to) ?)(\d)+ ?(°|degrees?|Degrees?|degs?|Degs?) ?F?(ahrenheit)?/g)
+	return str.match(/((\-|\-|\d|\.)+ ?(-|to) ?)?(\-|\-|\d|\.)+ ?((°|degrees?|Degrees?|degs?|Degs?) ?F(ahrenheit)?|℉)/g)
 }
 
 function findPSI(str) {
@@ -112,46 +116,45 @@ function findPSI(str) {
 }
 
 function findBTU(str) {
-	return str.match(/((\d|,| )+(k|K)? ?(btus?|BTUS?|Btus?|BTUs?)|((btus?|BTUS?|Btus?|BTUs?) ?(\d|,| )+(k|K)?))/g)
+	return str.match(/((\d|,| )+(k|K)? ?(btus?|BTUS?|Btus?|BTUs?)|([^A-Za-z](btus?|BTUS?|Btus?|BTUs?) ?(\d|,| )+(k|K)?))/g)
 }
 
 function convertFahrenheit(f) {
-	console.log(f)
 	let conversion = (f - 32) * (5/9);
 
 	return Math.floor(conversion + .5) + " °C"
 }
 
 function convertBTU(btu) {
-	console.log(btu)
 	let conversion = btu /3.412;
+	conversion = Math.floor(conversion + .5)
 
-	return " " + Math.floor(conversion + .5) + " W"
+	if (conversion >= 10000) {
+		return " " + Math.floor(conversion/1000) + " kW"
+	} else {
+		return " " + Math.floor(conversion + .5) + " W"
+	}
 }
 
 function convertPSI(psi) {
-	console.log(psi)
 	let conversion = psi * 6.894;
 
-	return Math.floor(conversion + .5) + " kPa"
+	return Math.floor(conversion/50)*50 + " kPa"
 }
 
 function convertMilesPerHour(mph) {
-	console.log(mph)
 	let conversion = (mph * 1.60934);
 
 	return Math.floor(conversion + .5) + " km/h"
 }
 
 function convertMiles(mph) {
-	console.log(mph)
 	let conversion = (mph * 1.60934);
 
 	return Math.floor(conversion + .5) + " km"
 }
 
 function convertCFM(cuft) {
-	console.log(cuft)
 	let conversion = (cuft * 28316.8);
 
 	return Math.floor(conversion/100000)*100 + " L/min"
@@ -159,7 +162,6 @@ function convertCFM(cuft) {
 }
 
 function convertCubicFoot(cuft) {
-	console.log(cuft)
 	let conversion = (cuft * 28316.8);
 
 	if (conversion >= 1000) {
@@ -170,7 +172,6 @@ function convertCubicFoot(cuft) {
 }
 
 function convertCubicInch(cuin) {
-	console.log(cuin)
 	let conversion = (cuin * 16.387);
 
 	if (conversion >= 1000) {
@@ -181,7 +182,6 @@ function convertCubicInch(cuin) {
 }
 
 function convertSquareFoot(sqft) {
-	console.log(sqft)
 	let conversion = (sqft * 0.092903);
 
 	if (conversion >= 1) {
@@ -192,7 +192,6 @@ function convertSquareFoot(sqft) {
 }
 
 function convertSquareInch(sqin) {
-	console.log(sqin)
 	let conversion = (sqin * 0.00064516);
 
 	if (conversion >= 1) {
@@ -203,7 +202,6 @@ function convertSquareInch(sqin) {
 }
 
 function convertGallon(gal) {
-	console.log(gal)
 	let conversion = roundMe(gal * 3.7854);
 
 	if (conversion >= 1) {
@@ -211,6 +209,12 @@ function convertGallon(gal) {
 	} else {
 		return Math.floor(conversion*1000) + " mL "
 	}
+}
+
+function convertGPM(gal) {
+	let conversion = roundMe(gal * 3.7854);
+
+	return conversion + " L/min "
 }
 
 function convertQuart(qt) {
@@ -346,7 +350,7 @@ function convertFeet(feet) {
 	let result = ""
 
 	if (conversion >= 1) {
-		result = conversion + " m "
+		result = roundMe10(conversion) + " m "
 	} else {
 		result = roundMe10(conversion*100) + " cm "
 	}
@@ -453,16 +457,17 @@ function metricateStr(str) {
 	}
 
 	jQuery(findFahrenheit(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
+		let num = parseFloat(b.match(/(\-|\-|\d|\.)+/g));
 
-		b = b.replace(/ ?(°|degrees?|Degrees?) ?F/g,"");
 
-		jQuery(b.match(/(\d|\.)+/g)).each((c,d) => {
-			let num2 = parseFloat(d.replace(/ ?(°|degrees?|Degrees?) ?F/g,"").match(/(\d|\.)+/g));
+		b = b.replace(/ ?((°|degrees?|Degrees?) ?F|℉)/g,"");
+
+		jQuery(b.match(/(\-|\d)+/g)).each((c,d) => {
+			let num2 = parseFloat(d.replace(/ ?((°|degrees?|Degrees?) ?F|℉)/g,"").match(/(\-|\-|\d|\.)+/g));
 			str = str.replace(d,convertFahrenheit(num2));
 		})
 
-		str = str.replace(/ ?(°|degrees?|Degrees?) ?F/g,"");
+		str = str.replace(/ ?((°|degrees?|Degrees?) ?F|℉)/g,"");
 
 	})
 
@@ -498,7 +503,12 @@ function metricateStr(str) {
 			return;
 		}
 
-		str = str.replace(b,convertBTU(num));
+		let test = convertBTU(num);
+
+		if (test.match("NaN") !== null)
+			return;
+
+		str = str.replace(b,test);
 	})
 
 	jQuery(findPSI(str)).each((a,b) => {
@@ -569,6 +579,12 @@ function metricateStr(str) {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
 		str = str.replace(b,convertQuart(num))
+	})
+
+	jQuery(findGPM(str)).each((a,b) => {
+		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		str = str.replace(b,convertGPM(num))
 	})
 
 	jQuery(findGallon(str)).each((a,b) => {
@@ -708,7 +724,7 @@ function onjQueryAvailable() {
 		var $ = jQuery;
 		jQuery(matchStr).each(
 			(a,b) => {
-				if (jQuery(b).is("[data-metricated]")) {
+				if (jQuery(b).is("[data-metricated]:not(.selection)")) {
 					return;
 				}
 				metricateObj(jQuery(b));
