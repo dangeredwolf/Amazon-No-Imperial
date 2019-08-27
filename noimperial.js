@@ -10,10 +10,14 @@
 'use strict';
 
 let baseUrl;
-let matchStr = ".aplus-module-wrapper>.apm-sidemodule,p,.a-expander-content,.sims-fbt-checkbox-label>span:not(.sims-fbt-this-item),.aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.sponsored-products-truncator-truncated,.a-spacing-mini,#prodDetails strong,#productDescription strong";
-let excludeStr = "#product-specification-table,.p13n-asin>span,.p13n-asin>span>span,.sims-fbt-seller-info,.sims-fbt-checkbox-label,.sims-fbt-image-box>li,.sims-fbt-image-box>li>span,.sims-fbt-image-box>li>span>a,.feed-carousel-card>span,.feed-carousel-card>span>a,.feed-carousel-card,.feed-carousel-shelf,.issuance-banner a,span[data-component-type=\"s-in-cart-badge-component\"],.sims-fbt-image-box,.zg-text-center-align,.a-section,.issuance-banner li,#ap-options,[data-action=\"main-image-click\"],.a-button-input,.a-button,.a-button-inner,.a-price,.a-profile,.abb-selected-variation,.abb-option>.a-list-item,.a-radio";
+let matchStr = "td.bucket>.content>ul>li,.size-weight>td.value,.shipping-weight>td.value,.textContainer__text,.a-dropdown-item,.aplus-module-wrapper>.apm-sidemodule,p,.a-expander-content,.sims-fbt-checkbox-label>span:not(.sims-fbt-this-item),.aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.a-spacing-mini,#prodDetails strong,#productDescription strong";
+let excludeStr = ".a-expander-content,.a-expander-container,.a-text-beside-button,.twister-dropdown-highlight,#variation_size_name,#product-specification-table,.p13n-asin>span,.p13n-asin>span>span,.sims-fbt-seller-info,.sims-fbt-checkbox-label,.sims-fbt-image-box>li,.sims-fbt-image-box>li>span,.sims-fbt-image-box>li>span>a,.feed-carousel-card>span,.feed-carousel-card>span>a,.feed-carousel-card,.feed-carousel-shelf,.issuance-banner a,span[data-component-type=\"s-in-cart-badge-component\"],.sims-fbt-image-box,.zg-text-center-align,.a-section,.issuance-banner li,#ap-options,[data-action=\"main-image-click\"],.a-button-input,.a-button,.a-button-inner,.a-price,.a-profile,.abb-selected-variation,.abb-option>.a-list-item,.a-radio";
+let matchStrInline = ".a-list-item,.selection,.a-dropdown-item";
 let disabled = false;
 let pollingRate = 1000; // 1s
+let isFluid = false;
+let fluidInclude = /(Mascara|Sunscreen|water|Water|Water Bottle|tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Detergent|detergent|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Cream(er)?|Conditioner|Smoothie|Moisturizer|CC Creme|Gel|gel|Cleaner|cleaner|Spotter|spotter)/g;
+let fluidExclude = /(Sheer Physical|UltiMATTE|Face Stick|Ultra Sport Sunscreen Spray|Sunscreen Sport Performance|Continuous Sunscreen Spray Broad Spectrum|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g;
 
 if (typeof urlExchange === "object" && typeof urlExchange.getAttribute === "function") {
 	baseUrl = urlExchange.getAttribute("type");
@@ -29,10 +33,10 @@ function findMil(str) {
 }
 
 function findInch(str) {
-	if (str.match(/\d\d\d\d in/g) !== null) { // no years in
+	if (str.match(/\d\d\d\d in/g) !== null || str.match(/\d/g) === null || str.match(/Top/g) !== null) {
 		return null;
 	}
-	return str.match(/(\d|\.| ?½)+(\s|-)?(inches|inch|in\.?|Inches|Inch|”|In\.?|\")/g)
+	return str.match(/[\"|\#](\d|\.)+(\s|-)?(inches|inch|in\.?|Inches|Inch|”|In\.?|\")[^\-]/g)
 }
 
 function findGallon(str) {
@@ -56,11 +60,11 @@ function findFeet(str) {
 }
 
 function findOunce(str) {
-	return str.match(/(\d|\.)+(\s|-)+?(oz\.?|ounces?|Ounces?|Oz\.?|OZ\.?)/g)
+	return str.match(/(\d|\.)+(\s|-)?(oz\.?|ounces?|Ounces?|Oz\.?|OZ\.?)/g)
 }
 
 function findFluidOunce(str) {
-	return str.match(/(\d|\.)+\s?(fl\.? oz\.?|floz|fluid oz\.?|fluid ounc?e?s?|Fluid ounc?e?s?|fluid Ounc?e?s?|Fluid Ounc?e?s?|fl\.? ounc?e?s?|Fl\.? ?Oz\.?|Fl\.? ?oz\.?|FL\.? OZ\.?)/g)
+	return str.match(/(\d|\.)+(\s|\-)?(U\.?S\.? fl\.? ?oz\.?|fl\.? ?oz\.?|floz|fluid ?oz\.?|fluid ?ounc?e?s?|Fluid ?ounc?e?s?|fluid ?Ounc?e?s?|Fluid ?Ounc?e?s?|fl\.? ounc?e?s?|Fl\.? ounc?e?s?|FL\.? ounc?e?s?|FL\.? Ounc?e?s?|Fl\.? ?Oz\.?|Fl\.? ?oz\.?|FL\.? OZ\.?)/g)
 }
 
 function findCubicFoot(str) {
@@ -237,29 +241,69 @@ function convertFluidOunce(ounce) {
 	} else {
 		let temp = Math.ceil(conversion) + " mL";
 
-		if (temp === "148 mL ") { // hack to get around rounding errors
-			return "150 mL ";
+		if (temp === "4 mL") { // hack to get around rounding errors
+			return "5 mL";
 		}
-		if (temp === "252 mL ") { // hack to get around rounding errors
-			return "250 mL ";
+
+		if (temp === "74 mL") { // hack to get around rounding errors
+			return "75 mL";
 		}
-		if (temp === "651 mL ") { // hack to get around rounding errors
-			return "650 mL ";
+		if (temp === "89 mL") { // hack to get around rounding errors
+			return "90 mL";
 		}
-		if (temp === "681 mL ") { // hack to get around rounding errors
-			return "680 mL ";
+		if (temp === "101 mL") { // hack to get around rounding errors
+			return "100 mL";
 		}
-		if (temp === "202 mL ") { // hack to get around rounding errors
-			return "200 mL ";
+		if (temp === "104 mL") { // hack to get around rounding errors
+			return "105 mL";
 		}
-		if (temp === "249 mL ") { // hack to get around rounding errors
-			return "250 mL ";
+		if (temp === "119 mL") { // hack to get around rounding errors
+			return "120 mL";
 		}
-		if (temp === "237 mL ") { // hack to use US legal cup
-			return "240 mL ";
+		if (temp === "147 mL") { // hack to get around rounding errors
+			return "150 mL";
 		}
-		if (temp === "1000 mL ") { // not sure why my code @ if(conversion >= 1000) ignores me so here
-			return "1 L ";
+		if (temp === "148 mL") { // hack to get around rounding errors
+			return "150 mL";
+		}
+		if (temp === "178 mL") { // hack to get around rounding errors
+			return "180 mL";
+		}
+		if (temp === "199 mL") { // hack to get around rounding errors
+			return "200 mL";
+		}
+		if (temp === "198 mL") { // hack to get around rounding errors
+			return "200 mL";
+		}
+		if (temp === "252 mL") { // hack to get around rounding errors
+			return "250 mL";
+		}
+		if (temp === "281 mL") { // hack to get around rounding errors
+			return "280 mL";
+		}
+		if (temp === "474 mL") { // hack to get around rounding errors
+			return "475 mL";
+		}
+		if (temp === "621 mL") { // hack to get around rounding errors
+			return "620 mL";
+		}
+		if (temp === "651 mL") { // hack to get around rounding errors
+			return "650 mL";
+		}
+		if (temp === "681 mL") { // hack to get around rounding errors
+			return "680 mL";
+		}
+		if (temp === "202 mL") { // hack to get around rounding errors
+			return "200 mL";
+		}
+		if (temp === "249 mL") { // hack to get around rounding errors
+			return "250 mL";
+		}
+		if (temp === "237 mL") { // hack to use US legal cup
+			return "240 mL";
+		}
+		if (temp === "1000 mL") { // not sure why my code @ if(conversion >= 1000) ignores me so here
+			return "1 L";
 		}
 		return temp;
 	}
@@ -267,6 +311,11 @@ function convertFluidOunce(ounce) {
 
 function convertOunce(ounce) {
 	console.log(ounce)
+
+	if (isNaN(ounce)) {
+		throw "Ounce is not a number"
+	}
+
 	let conversion = roundMe(ounce * 28.35);
 
 	if (conversion >= 1000) {
@@ -276,23 +325,36 @@ function convertOunce(ounce) {
 		if (asdf.toString().substring(1,2) === "99") {
 			asdf = asdf + 1;
 		}
-		console.log(asdf.toString().substring(1,2))
+		if (asdf === 57) { // not sure why my code @ if(conversion >= 1000) ignores me so here
+			return "60g";
+		}
 		return asdf + "g "
 	}
 }
 
 function convertPerFluidOunce(ounce) {
 	console.log(ounce)
-	let conversion = roundMe(ounce / 0.029573509718662);
+	let conversion = ounce / 0.029573509718662;
 
-	return "($" + roundMe(conversion) + " / L)"
+	if (conversion > 100) {
+		return ("($" + roundMe(conversion/10) + " / 100mL)");
+	} else {
+		return ("($" + roundMe(conversion) + " / L)");
+	}
 }
 
 function convertPerOunce(ounce) {
 	console.log(ounce)
-	let conversion = roundMe(ounce / 0.0283495);
+	let conversion = ounce / 0.0283495;
 
-	return ("($" + conversion + " / kg)")
+
+	if (conversion > 100) {
+		return ("($" + roundMe10(conversion/10) + " / 100g)");
+	} else {
+		return ("($" + roundMe10(conversion) + " / kg)");
+	}
+
+	return
 }
 
 function convertPerPound(pound) {
@@ -319,6 +381,10 @@ function convertLbs(lbs) {
 }
 
 function convertInch(inch) {
+	if (isNaN(inch)) {
+		return;
+	}
+
 	let conversion = roundMe(inch * 25.4);
 	let result = "";
 	if (conversion >= 1000) {
@@ -382,7 +448,7 @@ function roundMe(val) {
 		rounded = rounded + 1
 	}
 
-	if (rounded === NaN) {
+	if (isNaN(rounded)) {
 		console.error('what (roundMe)');
 		console.error(val);
 	}
@@ -396,7 +462,7 @@ function roundMe10(val) {
 		rounded = rounded + .1
 	}
 
-	if (rounded === NaN) {
+	if (isNaN(rounded)) {
 		console.error('what (roundMe10)');
 		console.error(val);
 	}
@@ -404,7 +470,7 @@ function roundMe10(val) {
 	return rounded;
 }
 
-function metricateStr(str) {
+function metricateStr(str, forceFluid) {
 
 	// get rid of fractions
 	if (findInch(str) !== null || findGallon(str) !== null) {
@@ -454,6 +520,7 @@ function metricateStr(str) {
 		str = str.replace(/\-?(13 ?\/ ?16)/g,".8125");
 		str = str.replace(/\-?(14 ?\/ ?16)/g,".875");
 		str = str.replace(/\-?(15 ?\/ ?16)/g,".9375");
+		str = str.replace(/\,/g,"");
 
 	}
 
@@ -483,6 +550,9 @@ function metricateStr(str) {
 
 		jQuery(b.match(/(\d|\.)+/g)).each((c,d) => {
 			let num2 = parseFloat(d.match(/(\d|\.)+/g));
+			if (isNaN(num2)) {
+				return;
+			}
 			let replaceMe = convertInch(num2);
 			console.log(d);
 			console.log(num2);
@@ -500,7 +570,7 @@ function metricateStr(str) {
 	jQuery(findBTU(str)).each((a,b) => {
 		let num = parseFloat(b.replace(/(k|K)/g,"000").replace(/( |,)/g,"").match(/(\d|\.)+/g));
 
-		if (num === NaN) {
+		if (isNaN(num)) {
 			return;
 		}
 
@@ -515,7 +585,7 @@ function metricateStr(str) {
 	jQuery(findPSI(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
-		if (num === NaN) {
+		if (isNaN(num)) {
 			return;
 		}
 
@@ -525,11 +595,19 @@ function metricateStr(str) {
 	jQuery(findMilesPerHour(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
 		str = str.replace(b,convertMilesPerHour(num));
 	})
 
 	jQuery(findMiles(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertMiles(num));
 	})
@@ -537,11 +615,19 @@ function metricateStr(str) {
 	jQuery(findCubicInch(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
 		str = str.replace(b,convertCubicInch(num))
 	})
 
 	jQuery(findCFM(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertCFM(num))
 	})
@@ -549,11 +635,19 @@ function metricateStr(str) {
 	jQuery(findCubicFoot(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
 		str = str.replace(b,convertCubicFoot(num))
 	})
 
 	jQuery(findPerPound(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertPerPound(num));
 	})
@@ -561,11 +655,24 @@ function metricateStr(str) {
 	jQuery(findPerOunce(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
+		// We have to do some inferencing because "ounce" is ambiguous between fluid ounce and ounce
+		if (forceFluid) {
+			str = str.replace(b,convertFluidOunce(num));
+		}
+
 		str = str.replace(b,convertPerOunce(num));
 	})
 
 	jQuery(findPerFluidOunce(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertPerFluidOunce(num))
 	})
@@ -573,11 +680,19 @@ function metricateStr(str) {
 	jQuery(findFluidOunce(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
 		str = str.replace(b,convertFluidOunce(num))
 	})
 
 	jQuery(findQuart(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertQuart(num))
 	})
@@ -585,11 +700,19 @@ function metricateStr(str) {
 	jQuery(findGPM(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
 		str = str.replace(b,convertGPM(num))
 	})
 
 	jQuery(findGallon(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertGallon(num))
 	})
@@ -597,11 +720,20 @@ function metricateStr(str) {
 	jQuery(findMil(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
 		str = str.replace(b,convertMil(num))
 	})
 
+
 	jQuery(findInch(str)).each((a,b) => {
-		let num = parseFloat(b.replace(/ ?½/g,".5").match(/(\d|\.)+/g));
+		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertInch(num))
 	})
@@ -609,17 +741,29 @@ function metricateStr(str) {
 	jQuery(findSquareInch(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
 		str = str.replace(b,convertSquareInch(num))
 	})
 
 	jQuery(findSquareFoot(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
+		if (isNaN(num)) {
+			return;
+		}
+
 		str = str.replace(b,convertSquareFoot(num))
 	})
 
 	jQuery(findFeet(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertFeet(num))
 	})
@@ -628,11 +772,12 @@ function metricateStr(str) {
 
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
-		if ( // We have to do some inferencing because "ounce" is ambiguous
-		str.match(/(tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Detergent|detergent|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Cream(er)?|Conditioner|Smoothie|Moisturizer|CC Creme|Gel|gel|Cleaner|cleaner|Spotter|spotter)/g) !== null
-		&&
-		str.match(/(powder|Powder|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g) === null
-		) {
+		if (isNaN(num)) {
+			return;
+		}
+
+		// We have to do some inferencing because "ounce" is ambiguous between fluid ounce and ounce
+		if ((str.match(fluidInclude) !== null && str.match(fluidExclude) === null) || forceFluid) {
 			str = str.replace(b,convertFluidOunce(num));
 		}
 
@@ -642,6 +787,10 @@ function metricateStr(str) {
 
 	jQuery(findPound(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
+
+		if (isNaN(num)) {
+			return;
+		}
 
 		str = str.replace(b,convertLbs(num));
 	})
@@ -664,7 +813,7 @@ function canMetricate(str) {
 
 var g_bannedtags = ['STYLE', 'SCRIPT', 'NOSCRIPT', 'TEXTAREA', 'IFRAME', 'IMG', 'I', 'DIV', 'TBODY', 'IMG', 'LABEL'];
 
-function metricateObj(obj) {
+function metricateObj(obj, forceFluid) {
 	if (typeof obj === "undefined") {
 		return;
 	}
@@ -674,8 +823,12 @@ function metricateObj(obj) {
 	}
 
 	if (typeof obj.attributeName !== "undefined") {
-		jQuery(obj.addedNodes).each((a,b) => metricateObj(jQuery(b)));
+		jQuery(obj.addedNodes).each((a,b) => metricateObj(jQuery(b), forceFluid));
 		return;
+	}
+
+	if (typeof obj.attr("title") !== "undefined") {
+		obj.attr("title",metricateStr(obj.attr("title")));
 	}
 
 	if (typeof jQuery(obj).contents() === "undefined" || jQuery(obj).contents().length <= 0) {
@@ -697,10 +850,10 @@ function metricateObj(obj) {
 			if ($.inArray(b.tagName, g_bannedtags) !== -1 ) return;
 
 			if (canMetricate(b.textContent))
-				b.textContent = metricateStr(b.textContent)
+				b.textContent = metricateStr(b.textContent, forceFluid)
 				//jQuery(b).html(metricateStr(jQuery(b).html()))
 			} else {
-				metricateObj(jQuery(b));
+				metricateObj(jQuery(b), forceFluid);
 			}
 		}
 	)
@@ -716,8 +869,25 @@ function onjQueryAvailable() {
 		return;
 	}
 
+	if ($("#productTitle").length <= 0) {
+		console.log("waiting for product title...");
+		setTimeout(onjQueryAvailable,10);
+		return;
+	}
+
+	let title = $("#productTitle").html();
+
+	// We have to do some inferencing because "ounce" is ambiguous between fluid ounce and ounce
+	if (title.match(fluidInclude) !== null && title.match(fluidExclude) === null) {
+		isFluid = true;
+	}
+
+	jQuery(matchStrInline).each(
+		(a,b) => metricateObj(jQuery(b), isFluid)
+	)
+
 	jQuery(matchStr).each(
-		(a,b) => metricateObj(jQuery(b))
+		(a,b) => metricateObj(jQuery(b),isFluid && jQuery(b).is(matchStrInline))
 	)
 
 	setInterval(() => {
@@ -728,7 +898,7 @@ function onjQueryAvailable() {
 				if (jQuery(b).is("[data-metricated]:not(.selection)")) {
 					return;
 				}
-				metricateObj(jQuery(b));
+				metricateObj(jQuery(b),isFluid && jQuery(b).is(matchStrInline));
 				$(b).attr("data-metricated","true")
 			}
 		)

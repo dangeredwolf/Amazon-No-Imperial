@@ -29,6 +29,11 @@
   "icons": {
    },
 
+   "browser_action": {
+    "default_popup": "panel.html",
+    "default_title": "No Imperial Amazon"
+  },
+
   "web_accessible_resources": [
     "noimperial.js",
     "jquery.min.js"

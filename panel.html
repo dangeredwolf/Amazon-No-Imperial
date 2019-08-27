@@ -1,0 +1,89 @@
+<html>
+	<head>
+		<script src="jquery.min.js"></script>
+		<script src="panel.js"></script>
+		<!-- <script src="bootstrap.bundle.min.js"></script> -->
+		<!-- <link href="bootstrap.min.css" rel="stylesheet"> -->
+		<style>
+
+			html,a,button,input {
+				font-family:Roboto,"Segoe UI","Noto Sans",Transport,Ubuntu,sans-serif;
+			}
+
+			html {
+				width:240px;
+				min-height:300px;
+				height:auto;
+				padding:12px;
+				font-size:14px
+			}
+
+			body {
+				font-size:100%
+			}
+
+			h6 {
+				font-weight:400;
+				font-size:14px
+			}
+
+			input[type="checkbox"] {
+				height:20px;
+				width:20px;
+				padding-right:3px;
+				vertical-align:middle;
+			}
+
+			button,a.btn {
+				position:relative;
+				display:inline-block;
+				pointer-events:all;
+				padding:9px 10px;
+				text-align:center;
+				text-decoration:none;
+				cursor:pointer;
+				font-size:14px;
+				font-weight:500;
+				border:0;
+				border-color:transparent;
+				background:transparent;
+				text-shadow:none;
+				text-transform:uppercase;
+				color:#fff;
+				background-color:#09e;
+				border-radius:3px;
+				margin:10px;
+				box-shadow:0 2px 4px rgba(17,17,17,.5);
+				transition:all 0.12s
+			}
+
+			button:hover,a.btn:hover,button:focus,a.btn:focus {
+				outline:0;
+				box-shadow:0 3px 7px rgba(17,17,17,.5);
+				background-color:#0af
+			}
+
+			button:active,a.btn:active {
+				background-color:#5af
+			}
+
+		</style>
+
+	</head>
+
+	<h6>Welcome to <b>No Imperial Amazon</b>, where we make Amazon use the metric system.</h6>
+
+	<div class="form-group form-check">
+		<input type="checkbox" class="form-check-input" id="enabled">
+		<label class="form-check-label" for="enabled">Enable Extension</label>
+		<br>
+		<br>
+		Having a problem with this page?
+		<br>
+		<button role="button" class="btn btn-primary" id="page_issue">Report Page Issue</button>
+		<br>
+		Or, tell us how we can make the extension better in general.
+		<br>
+		<a role="button" class="btn btn-primary" href="https://github.com/dangeredwolf/No-Imperial-Amazon/issues/new">Send Feedback</a>
+	</div>
+</html>

@@ -38,5 +38,7 @@ function checkIfHeadReady() {
 	document.head.appendChild(injectScript2);
 
 }
-
-checkIfHeadReady();
+chrome.storage.sync.get({"enabled":true},(i) => {
+	if (i.enabled === "true")
+		checkIfHeadReady();
+})
