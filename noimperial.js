@@ -16,8 +16,8 @@ let matchStrInline = ".a-list-item,.selection,.a-dropdown-item";
 let disabled = false;
 let pollingRate = 1000; // 1s
 let isFluid = false;
-let fluidInclude = /(Mascara|Sunscreen|water|Water|Water Bottle|tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Detergent|detergent|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Cream(er)?|Conditioner|Smoothie|Moisturizer|CC Creme|Gel|gel|Cleaner|cleaner|Spotter|spotter)/g;
-let fluidExclude = /(Sheer Physical|UltiMATTE|Face Stick|Ultra Sport Sunscreen Spray|Sunscreen Sport Performance|Continuous Sunscreen Spray Broad Spectrum|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g;
+let fluidInclude = /(SPRAY|Mascara|Sunscreen|water|Water|Water Bottle|tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Detergent|detergent|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Cream(er)?|Conditioner|Smoothie|Moisturizer|CC Creme|Gel|gel|Cleaner|cleaner|Spotter|spotter)/g;
+let fluidExclude = /(Residual|Stick|Pudding|Shells & Cheese|Easy Mac|Cookie|Cracker|Ketchup|Sheer Physical|UltiMATTE|Face Stick|Ultra Sport Sunscreen Spray|Sunscreen Sport Performance|Continuous( Sunscreen)? Spray( Broad Spectrum)?|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g;
 
 if (typeof urlExchange === "object" && typeof urlExchange.getAttribute === "function") {
 	baseUrl = urlExchange.getAttribute("type");
@@ -36,7 +36,7 @@ function findInch(str) {
 	if (str.match(/\d\d\d\d in/g) !== null || str.match(/\d/g) === null || str.match(/Top/g) !== null) {
 		return null;
 	}
-	return str.match(/[\"|\#](\d|\.)+(\s|-)?(inches|inch|in\.?|Inches|Inch|”|In\.?|\")[^\-]/g)
+	return str.match(/(?![\"|\#])(\d|\.)+(\s|-)?(inch(es)?|in\.|Inch(es)?|”|In\.|\")[^\-]/g)
 }
 
 function findGallon(str) {
@@ -88,7 +88,7 @@ function findSquareInch(str) {
 }
 
 function findPound(str) {
-	return str.match(/(\d|\.)+(\s)+?(lbs?|pounds?|Pounds?|LBS?|Lbs?)/g)
+	return str.match(/(\d|\.)+(\s)?(lbs?|pounds?|Pounds?|LBS?|Lbs?)/g)
 }
 
 function findPerPound(str) {
@@ -325,8 +325,17 @@ function convertOunce(ounce) {
 		if (asdf.toString().substring(1,2) === "99") {
 			asdf = asdf + 1;
 		}
-		if (asdf === 57) { // not sure why my code @ if(conversion >= 1000) ignores me so here
+		if (asdf === 29 || asdf === 28) {
+			return "30g";
+		}
+		if (asdf === 57 || asdf === 58 || asdf === 59) {
 			return "60g";
+		}
+		if (asdf === 91) {
+			return "90g";
+		}
+		if (asdf === 198) {
+			return "200g";
 		}
 		return asdf + "g "
 	}
