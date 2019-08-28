@@ -12,8 +12,8 @@
 let baseUrl;
 let matchStr = ".askAnswersAndComments span,span.a-size-base-plus.a-color-base.a-text-normal,td.bucket>.content>ul>li,.size-weight>td.value,.shipping-weight>td.value,.textContainer__text,.a-dropdown-item,.aplus-module-wrapper>.apm-sidemodule,p,.a-expander-content,.sims-fbt-checkbox-label>span:not(.sims-fbt-this-item),.aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.a-spacing-mini,#prodDetails strong,#productDescription strong";
 let excludeStr =
-".a-expander-content," +
-".a-expander-container," +
+// ".a-expander-content," +
+// ".a-expander-container," +
 ".a-text-beside-button," +
 ".twister-dropdown-highlight," +
 "#variation_size_name," +
@@ -33,7 +33,7 @@ let excludeStr =
 "span[data-component-type=\"s-in-cart-badge-component\"]," +
 ".sims-fbt-image-box," +
 ".zg-text-center-align," +
-".a-section," +
+// ".a-section," +
 ".issuance-banner li," +
 "#ap-options," +
 "[data-action=\"main-image-click\"]," +
@@ -50,7 +50,7 @@ let disabled = false;
 let pollingRate = 1000; // 1s
 let isFluid = false;
 let fluidInclude = /(SPRAY|Mascara|Sunscreen|water|Water|Water Bottle|tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Detergent|detergent|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Cream(er)?|Conditioner|Smoothie|Moisturizer|CC Creme|Gel|gel|Cleaner|cleaner|Spotter|spotter)/g;
-let fluidExclude = /(Residual|Stick|Pudding|Shells & Cheese|Easy Mac|Cookie|Cracker|Ketchup|Sheer Physical|UltiMATTE|Face Stick|Ultra Sport Sunscreen Spray|Sunscreen Sport Performance|Continuous( Sunscreen)? Spray( Broad Spectrum)?|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g;
+let fluidExclude = /(Bunches of Oats|cereal|Cereal|Kellogg\'s|Residual|Stick|Pudding|Shells & Cheese|Easy Mac|Cookie|Cracker|Ketchup|Sheer Physical|UltiMATTE|Face Stick|Ultra Sport Sunscreen Spray|Sunscreen Sport Performance|Continuous( Sunscreen)? Spray( Broad Spectrum)?|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g;
 
 if (typeof urlExchange === "object" && typeof urlExchange.getAttribute === "function") {
 	baseUrl = urlExchange.getAttribute("type");
@@ -373,8 +373,20 @@ function convertOunce(ounce) {
 		if (asdf === 29 || asdf === 28) {
 			return "30g";
 		}
-		if (asdf === 57 || asdf === 58 || asdf === 59) {
+		if (asdf === 51) {
+			return "50g";
+		}
+		if (asdf === 57) {
+			return "56g"
+		}
+		if (asdf === 58 || asdf === 59) {
 			return "60g";
+		}
+		if (asdf === 71) {
+			return "70g";
+		}
+		if (asdf === 79) {
+			return "80g";
 		}
 		if (asdf === 91) {
 			return "90g";
@@ -391,9 +403,9 @@ function convertPerFluidOunce(ounce) {
 	let conversion = ounce / 0.029573509718662;
 
 	if (conversion > 100) {
-		return ("($" + roundMe(conversion/10) + " / 100mL)");
+		return ("($" + roundMe100(conversion/10) + " / 100mL)");
 	} else {
-		return ("($" + roundMe(conversion) + " / L)");
+		return ("($" + roundMe100(conversion) + " / L)");
 	}
 }
 
@@ -403,9 +415,9 @@ function convertPerOunce(ounce) {
 
 
 	if (conversion > 100) {
-		return ("($" + roundMe10(conversion/10) + " / 100g)");
+		return ("($" + roundMe100(conversion/10) + " / 100g)");
 	} else {
-		return ("($" + roundMe10(conversion) + " / kg)");
+		return ("($" + roundMe100(conversion) + " / kg)");
 	}
 
 	return
@@ -413,7 +425,7 @@ function convertPerOunce(ounce) {
 
 function convertPerPound(pound) {
 	console.log(pound)
-	let conversion = roundMe(pound / 0.453592);
+	let conversion = roundMe100(pound / 0.453592);
 
 	return "($" + roundMe(conversion) + " / kg)"
 }
@@ -485,7 +497,19 @@ function convertFeet(feet) {
 	return result;
 }
 
-function roundMe(val) {
+function roundMe100(val) {
+	let a = roundMe(val, true);
+
+	if (a.toString().match(/\.\d$/gm) !== null) { // add a trailing zero if only 1 decimal place (ie $3.7 -> $3.70)
+		return a.toString() + "0"
+	}
+	if (a.toString().match(/^[^\.]\d[^\.]$/gm) !== null) { // add decimal if none there (ie $3 -> $3.00)
+		return a.toString() + ".00"
+	}
+	return
+}
+
+function roundMe(val, force100) {
 
 	if (val > 10) {
 		return roundMe10(val)

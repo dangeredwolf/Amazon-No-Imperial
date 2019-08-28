@@ -31,7 +31,7 @@ chrome.storage.sync.get({"enabled":"true"},(i) => {
 
 chrome.tabs.query({active:true,currentWindow:true},(a) => {
 	if (a[0].url.match(/https?\:\/\/((\w+)?\.?)amazon.\w+/g) === null) {
-		$("#page_issue").remove();
+		$("#page_issue,#page_issue_text").remove();
 	}
 
 });
