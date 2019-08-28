@@ -1,5 +1,5 @@
 /*
-	noimperial.js
+	metricamazon.js
 	Copyright (c) 2019 dangeredwolf
 	Released under the MIT licence
 
@@ -10,8 +10,41 @@
 'use strict';
 
 let baseUrl;
-let matchStr = "td.bucket>.content>ul>li,.size-weight>td.value,.shipping-weight>td.value,.textContainer__text,.a-dropdown-item,.aplus-module-wrapper>.apm-sidemodule,p,.a-expander-content,.sims-fbt-checkbox-label>span:not(.sims-fbt-this-item),.aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.a-spacing-mini,#prodDetails strong,#productDescription strong";
-let excludeStr = ".a-expander-content,.a-expander-container,.a-text-beside-button,.twister-dropdown-highlight,#variation_size_name,#product-specification-table,.p13n-asin>span,.p13n-asin>span>span,.sims-fbt-seller-info,.sims-fbt-checkbox-label,.sims-fbt-image-box>li,.sims-fbt-image-box>li>span,.sims-fbt-image-box>li>span>a,.feed-carousel-card>span,.feed-carousel-card>span>a,.feed-carousel-card,.feed-carousel-shelf,.issuance-banner a,span[data-component-type=\"s-in-cart-badge-component\"],.sims-fbt-image-box,.zg-text-center-align,.a-section,.issuance-banner li,#ap-options,[data-action=\"main-image-click\"],.a-button-input,.a-button,.a-button-inner,.a-price,.a-profile,.abb-selected-variation,.abb-option>.a-list-item,.a-radio";
+let matchStr = ".askAnswersAndComments span,span.a-size-base-plus.a-color-base.a-text-normal,td.bucket>.content>ul>li,.size-weight>td.value,.shipping-weight>td.value,.textContainer__text,.a-dropdown-item,.aplus-module-wrapper>.apm-sidemodule,p,.a-expander-content,.sims-fbt-checkbox-label>span:not(.sims-fbt-this-item),.aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.a-spacing-mini,#prodDetails strong,#productDescription strong";
+let excludeStr =
+".a-expander-content," +
+".a-expander-container," +
+".a-text-beside-button," +
+".twister-dropdown-highlight," +
+"#variation_size_name," +
+"#product-specification-table," +
+".p13n-asin>span," +
+".p13n-asin>span>span," +
+".sims-fbt-seller-info," +
+".sims-fbt-checkbox-label," +
+".sims-fbt-image-box>li," +
+".sims-fbt-image-box>li>span," +
+".sims-fbt-image-box>li>span>a," +
+".feed-carousel-card>span," +
+".feed-carousel-card>span>a," +
+".feed-carousel-card," +
+".feed-carousel-shelf," +
+".issuance-banner a," +
+"span[data-component-type=\"s-in-cart-badge-component\"]," +
+".sims-fbt-image-box," +
+".zg-text-center-align," +
+".a-section," +
+".issuance-banner li," +
+"#ap-options," +
+"[data-action=\"main-image-click\"]," +
+".a-button-input," +
+".a-button," +
+".a-button-inner," +
+".a-price," +
+".a-profile," +
+".abb-selected-variation," +
+".abb-option>.a-list-item," +
+".a-radio";
 let matchStrInline = ".a-list-item,.selection,.a-dropdown-item";
 let disabled = false;
 let pollingRate = 1000; // 1s
@@ -36,7 +69,7 @@ function findInch(str) {
 	if (str.match(/\d\d\d\d in/g) !== null || str.match(/\d/g) === null || str.match(/Top/g) !== null) {
 		return null;
 	}
-	return str.match(/(?![\"|\#])(\d|\.)+(\s|-)?(inch(es)?|in\.|Inch(es)?|”|In\.|\")[^\-]/g)
+	return str.match(/(?![\"|\#|\$])(\d|\.)+(\s|-)?(inch(es)?|in\.|Inch(es)?|”|In\.|\")[^\-]/g)
 }
 
 function findGallon(str) {
@@ -64,7 +97,7 @@ function findOunce(str) {
 }
 
 function findFluidOunce(str) {
-	return str.match(/(\d|\.)+(\s|\-)?(U\.?S\.? fl\.? ?oz\.?|fl\.? ?oz\.?|floz|fluid ?oz\.?|fluid ?ounc?e?s?|Fluid ?ounc?e?s?|fluid ?Ounc?e?s?|Fluid ?Ounc?e?s?|fl\.? ounc?e?s?|Fl\.? ounc?e?s?|FL\.? ounc?e?s?|FL\.? Ounc?e?s?|Fl\.? ?Oz\.?|Fl\.? ?oz\.?|FL\.? OZ\.?)/g)
+	return str.match(/(\d|\.)+(\s\s?|\-)?(U\.?S\.? fl\.?.?oz\.?|fl\.?.?oz?\.?|floz|fluid ?oz?\.?|fluid ?ounc?e?s?|Fluid ?ounc?e?s?|fluid ?Ounc?e?s?|Fluid ?Ounc?e?s?|fl\.? ounc?e?s?|Fl\.? ounc?e?s?|FL\.? ounc?e?s?|FL\.? Ounc?e?s?|Fl\.?.?Oz?\.?|Fl\.?.?oz?\.?|FL\.?.OZ?\.?)/g)
 }
 
 function findCubicFoot(str) {
@@ -241,66 +274,78 @@ function convertFluidOunce(ounce) {
 	} else {
 		let temp = Math.ceil(conversion) + " mL";
 
-		if (temp === "4 mL") { // hack to get around rounding errors
+		if (temp === "4 mL") {
 			return "5 mL";
 		}
 
-		if (temp === "74 mL") { // hack to get around rounding errors
+		if (temp === "74 mL") {
 			return "75 mL";
 		}
-		if (temp === "89 mL") { // hack to get around rounding errors
+		if (temp === "89 mL") {
 			return "90 mL";
 		}
-		if (temp === "101 mL") { // hack to get around rounding errors
+		if (temp === "101 mL") {
 			return "100 mL";
 		}
-		if (temp === "104 mL") { // hack to get around rounding errors
+		if (temp === "104 mL") {
 			return "105 mL";
 		}
-		if (temp === "119 mL") { // hack to get around rounding errors
+		if (temp === "119 mL") {
 			return "120 mL";
 		}
-		if (temp === "147 mL") { // hack to get around rounding errors
+		if (temp === "147 mL") {
 			return "150 mL";
 		}
-		if (temp === "148 mL") { // hack to get around rounding errors
+		if (temp === "148 mL") {
 			return "150 mL";
 		}
-		if (temp === "178 mL") { // hack to get around rounding errors
+		if (temp === "178 mL") {
 			return "180 mL";
 		}
-		if (temp === "199 mL") { // hack to get around rounding errors
+		if (temp === "199 mL") {
 			return "200 mL";
 		}
-		if (temp === "198 mL") { // hack to get around rounding errors
+		if (temp === "198 mL") {
 			return "200 mL";
 		}
-		if (temp === "252 mL") { // hack to get around rounding errors
-			return "250 mL";
-		}
-		if (temp === "281 mL") { // hack to get around rounding errors
-			return "280 mL";
-		}
-		if (temp === "474 mL") { // hack to get around rounding errors
-			return "475 mL";
-		}
-		if (temp === "621 mL") { // hack to get around rounding errors
-			return "620 mL";
-		}
-		if (temp === "651 mL") { // hack to get around rounding errors
-			return "650 mL";
-		}
-		if (temp === "681 mL") { // hack to get around rounding errors
-			return "680 mL";
-		}
-		if (temp === "202 mL") { // hack to get around rounding errors
+		if (temp === "202 mL") {
 			return "200 mL";
-		}
-		if (temp === "249 mL") { // hack to get around rounding errors
-			return "250 mL";
 		}
 		if (temp === "237 mL") { // hack to use US legal cup
 			return "240 mL";
+		}
+		if (temp === "249 mL") {
+			return "250 mL";
+		}
+		if (temp === "252 mL") {
+			return "250 mL";
+		}
+		if (temp === "281 mL") {
+			return "280 mL";
+		}
+		if (temp === "332 mL") {
+			return "330 mL";
+		}
+		if (temp === "341 mL") {
+			return "340 mL";
+		}
+		if (temp === "474 mL") {
+			return "475 mL";
+		}
+		if (temp === "503 mL") { // go fuck yourself Sparkling Ice brand water
+			return "500 mL";
+		}
+		if (temp === "621 mL") {
+			return "620 mL";
+		}
+		if (temp === "651 mL") {
+			return "650 mL";
+		}
+		if (temp === "681 mL") {
+			return "680 mL";
+		}
+		if (temp === "749 mL") {
+			return "750 mL";
 		}
 		if (temp === "1000 mL") { // not sure why my code @ if(conversion >= 1000) ignores me so here
 			return "1 L";
@@ -409,6 +454,9 @@ function convertInch(inch) {
 	}
 	if (result === "99 mm ") { // hack to get around rounding errors
 		return "100 mm ";
+	}
+	if (result === "1.02 m ") { // hack to get around rounding errors
+		return "1 m ";
 	}
 	return result
 }
@@ -848,6 +896,7 @@ function metricateObj(obj, forceFluid) {
 
 		try {
 			if (typeof b !== "string" && jQuery(b).is(excludeStr)) {
+				console.log("Excluded item: ",b);
 				return;
 			}
 		} catch(e) {
@@ -873,12 +922,14 @@ function onjQueryAvailable() {
 		return;
 	}
 
+	let isProductPage = document.location.pathname.substr(0,3) === "/dp";
+
 	if (typeof jQuery === "undefined") {
 		setTimeout(onjQueryAvailable,10);
 		return;
 	}
 
-	if ($("#productTitle").length <= 0) {
+	if ($("#productTitle").length <= 0 && isProductPage) {
 		console.log("waiting for product title...");
 		setTimeout(onjQueryAvailable,10);
 		return;
@@ -887,8 +938,9 @@ function onjQueryAvailable() {
 	let title = $("#productTitle").html();
 
 	// We have to do some inferencing because "ounce" is ambiguous between fluid ounce and ounce
-	if (title.match(fluidInclude) !== null && title.match(fluidExclude) === null) {
+	if (isProductPage && title.match(fluidInclude) !== null && title.match(fluidExclude) === null) {
 		isFluid = true;
+		console.log("Detecting that it's a fluid")
 	}
 
 	jQuery(matchStrInline).each(

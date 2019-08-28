@@ -1,12 +1,12 @@
 {
-  "name": "No Imperial Amazon (Beta)",
-  "short_name": "No Imperial Amazon (Beta)",
+  "name": "Metric Amazon (Beta)",
+  "short_name": "Metric Amazon (Beta)",
 
   "author":"dangeredwolf",
 
   "description": "__MSG_description__",
 
-  "version": "1.1.0",
+  "version": "1.2.0",
 
   "default_locale":"en",
 
@@ -31,7 +31,7 @@
 
    "browser_action": {
     "default_popup": "panel.html",
-    "default_title": "No Imperial Amazon"
+    "default_title": "Metric Amazon"
   },
 
   "web_accessible_resources": [
