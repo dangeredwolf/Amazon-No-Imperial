@@ -28,13 +28,13 @@ function checkIfHeadReady() {
 	urlExchange(browser.extension.getURL(""));
 
 	var injectScript = document.createElement("script");
+	injectScript.setAttribute("type","module");
 	injectScript.src = browser.extension.getURL("jquery.min.js");
-	injectScript.type = "text/javascript";
 	document.head.appendChild(injectScript);
 
 	var injectScript2 = document.createElement("script");
+	injectScript2.setAttribute("type","module");
 	injectScript2.src = browser.extension.getURL("noimperial.js");
-	injectScript2.type = "text/javascript";
 	document.head.appendChild(injectScript2);
 
 }

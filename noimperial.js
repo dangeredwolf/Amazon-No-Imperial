@@ -6,8 +6,17 @@
 	made with love <3
 
 */
+"use strict";
 
-'use strict';
+import { assert, findHelper, validate } from "./class/HelperFunctions.js";
+import { ProviderMile } from "./class/ProviderMile.js";
+import { ProviderYard } from "./class/ProviderYard.js";
+import { ProviderFeet } from "./class/ProviderFeet.js";
+import { ProviderInch } from "./class/ProviderInch.js";
+import { ProviderMil } from "./class/ProviderMil.js";
+import { MeasureMeter } from "./class/MeasureMeter.js";
+import { roundMe, roundMe10, roundMe100 } from "./class/Rounding.js";
+
 
 let baseUrl;
 let matchStr = ".askAnswersAndComments span,span.a-size-base-plus.a-color-base.a-text-normal,td.bucket>.content>ul>li,.size-weight>td.value,.shipping-weight>td.value,.textContainer__text,.a-dropdown-item,.aplus-module-wrapper>.apm-sidemodule,p,.a-expander-content,.sims-fbt-checkbox-label>span:not(.sims-fbt-this-item),.aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.a-spacing-mini,#prodDetails strong,#productDescription strong";
@@ -55,21 +64,21 @@ let fluidExclude = /(Bunches of Oats|cereal|Cereal|Kellogg\'s|Residual|Stick|Pud
 if (typeof urlExchange === "object" && typeof urlExchange.getAttribute === "function") {
 	baseUrl = urlExchange.getAttribute("type");
 	console.info("urlExchange completed with URL " + baseUrl);
-}
-
-function findNumbers(str) {
-	return str.match(/(\d|\.|½)+/g)
-}
-
-function findMil(str) {
-	return str.match(/(\d|\.)+(\s|-)?(mil)[^le]/g)
+} else {
+	throw "uh... where is urlExchange?";
 }
 
 function findInch(str) {
-	if (str.match(/\d\d\d\d in/g) !== null || str.match(/\d/g) === null || str.match(/Top/g) !== null) {
-		return null;
-	}
-	return str.match(/(?![\"|\#|\$])(\d|\.)+(\s|-)?(inch(es)?|in\.|Inch(es)?|”|In\.|\")[^\-]/g)
+	if (!validate(str)) return;
+
+	let matches = str.match(/(?![\"|\#|\$])(\d|\.)+(\s|-)?(inch(es)?|in\.|Inch(es)?|”|In\.|\")[^\-]/g);
+
+}
+
+function findMil(str) {
+	if (!validate(str)) return;
+
+	return str.match(/(\d|\.)+(\s|-)?(mil)[^le]/g)
 }
 
 function findGallon(str) {
@@ -394,6 +403,15 @@ function convertOunce(ounce) {
 		if (asdf === 198) {
 			return "200g";
 		}
+		if (asdf === 374) {
+			return "375g";
+		}
+		if (asdf === 397) {
+			return "400g";
+		}
+		if (asdf === 794) {
+			return "800g";
+		}
 		return asdf + "g "
 	}
 }
@@ -497,113 +515,63 @@ function convertFeet(feet) {
 	return result;
 }
 
-function roundMe100(val) {
-	let a = roundMe(val, true);
-
-	if (a.toString().match(/\.\d$/gm) !== null) { // add a trailing zero if only 1 decimal place (ie $3.7 -> $3.70)
-		return a.toString() + "0"
-	}
-	if (a.toString().match(/^[^\.]\d[^\.]$/gm) !== null) { // add decimal if none there (ie $3 -> $3.00)
-		return a.toString() + ".00"
-	}
-	return
-}
-
-function roundMe(val, force100) {
-
-	if (val > 10) {
-		return roundMe10(val)
-	}
-
-	let rounded = Math.floor((val * 100) + .5)/100;
-
-	if (rounded.toString().match(/9\.99/g) !== null) {
-		rounded = rounded + .01
-	}
-
-	if (rounded.toString().match(/9\.9/g) !== null) {
-		rounded = rounded + .1
-	}
-
-	if (rounded.toString().match(/\d9 k?g/g) !== null) {
-		rounded = rounded + 1
-	}
-
-	if (isNaN(rounded)) {
-		console.error('what (roundMe)');
-		console.error(val);
-	}
-	return rounded;
-}
-
-function roundMe10(val) {
-	let rounded = Math.floor((val * 10) + .05)/10;
-
-	if (rounded.toString().match(/9\.9/g) !== null) {
-		rounded = rounded + .1
-	}
-
-	if (isNaN(rounded)) {
-		console.error('what (roundMe10)');
-		console.error(val);
-	}
-
-	return rounded;
-}
-
 function metricateStr(str, forceFluid) {
 
 	// get rid of fractions
-	if (findInch(str) !== null || findGallon(str) !== null) {
-		console.log(str)
+	console.log(str);
 
-		str = str.replace(/\-?(1 ?\/ ?2|½)/g,".5");
-		str = str.replace(/\-?(1 ?\/ ?3|⅓)/g,".333333");
-		str = str.replace(/\-?(2 ?\/ ?3|⅔)/g,".666666");
-		str = str.replace(/\-?(1 ?\/ ?4|¼)/g,".25");
-		str = str.replace(/\-?(3 ?\/ ?4|¾)/g,".75");
-		str = str.replace(/\-?(1 ?\/ ?5|⅕)/g,".2");
-		str = str.replace(/\-?(2 ?\/ ?5|⅖)/g,".4");
-		str = str.replace(/\-?(3 ?\/ ?5|⅗)/g,".6");
-		str = str.replace(/\-?(4 ?\/ ?5|⅘)/g,".8");
-		str = str.replace(/\-?(1 ?\/ ?6|⅙)/g,".166667");
-		str = str.replace(/\-?(5 ?\/ ?6|⅚)/g,".833333");
-		str = str.replace(/\-?(1 ?\/ ?7|⅐)/g,".142857");
-		str = str.replace(/\-?(2 ?\/ ?7)/g,".285714");
-		str = str.replace(/\-?(3 ?\/ ?7)/g,".428571");
-		str = str.replace(/\-?(4 ?\/ ?7)/g,".571428");
-		str = str.replace(/\-?(5 ?\/ ?7)/g,".714285");
-		str = str.replace(/\-?(6 ?\/ ?7)/g,".857143");
-		str = str.replace(/\-?(1 ?\/ ?8|⅛)/g,".125");
-		str = str.replace(/\-?(2 ?\/ ?8)/g,".25");
-		str = str.replace(/\-?(3 ?\/ ?8|⅜)/g,".375");
-		str = str.replace(/\-?(5 ?\/ ?8|⅝)/g,".625");
-		str = str.replace(/\-?(7 ?\/ ?8|⅞)/g,".875");
-		str = str.replace(/\-?(1 ?\/ ?9|⅑)/g,".11111");
-		str = str.replace(/\-?(1 ?\/ ?10|⅒)/g,".1");
-		str = str.replace(/\-?(1 ?\/ ?12)/g,".083333");
-		str = str.replace(/\-?(5 ?\/ ?12)/g,".416667");
-		str = str.replace(/\-?(7 ?\/ ?12)/g,".583333");
-		str = str.replace(/\-?(11 ?\/ ?12)/g,".916667");
-		str = str.replace(/\-?(1 ?\/ ?16)/g,".0625");
-		str = str.replace(/\-?(2 ?\/ ?16)/g,".125");
-		str = str.replace(/\-?(3 ?\/ ?16)/g,".1875");
-		str = str.replace(/\-?(4 ?\/ ?16)/g,".25");
-		str = str.replace(/\-?(5 ?\/ ?16)/g,".3125");
-		str = str.replace(/\-?(6 ?\/ ?16)/g,".375");
-		str = str.replace(/\-?(7 ?\/ ?16)/g,".4375");
-		str = str.replace(/\-?(8 ?\/ ?16)/g,".5");
-		str = str.replace(/\-?(9 ?\/ ?16)/g,".5625");
-		str = str.replace(/\-?(10 ?\/ ?16)/g,".625");
-		str = str.replace(/\-?(11 ?\/ ?16)/g,".6825");
-		str = str.replace(/\-?(12 ?\/ ?16)/g,".75");
-		str = str.replace(/\-?(13 ?\/ ?16)/g,".75");
-		str = str.replace(/\-?(13 ?\/ ?16)/g,".8125");
-		str = str.replace(/\-?(14 ?\/ ?16)/g,".875");
-		str = str.replace(/\-?(15 ?\/ ?16)/g,".9375");
-		str = str.replace(/\,/g,"");
+	str = str.replace(/\-?(1 ?\/ ?2|½)/g,".5");
+	str = str.replace(/\-?(1 ?\/ ?3|⅓)/g,".333333");
+	str = str.replace(/\-?(2 ?\/ ?3|⅔)/g,".666666");
+	str = str.replace(/\-?(1 ?\/ ?4|¼)/g,".25");
+	str = str.replace(/\-?(3 ?\/ ?4|¾)/g,".75");
+	str = str.replace(/\-?(1 ?\/ ?5|⅕)/g,".2");
+	str = str.replace(/\-?(2 ?\/ ?5|⅖)/g,".4");
+	str = str.replace(/\-?(3 ?\/ ?5|⅗)/g,".6");
+	str = str.replace(/\-?(4 ?\/ ?5|⅘)/g,".8");
+	str = str.replace(/\-?(1 ?\/ ?6|⅙)/g,".166667");
+	str = str.replace(/\-?(5 ?\/ ?6|⅚)/g,".833333");
+	str = str.replace(/\-?(1 ?\/ ?7|⅐)/g,".142857");
+	str = str.replace(/\-?(2 ?\/ ?7)/g,".285714");
+	str = str.replace(/\-?(3 ?\/ ?7)/g,".428571");
+	str = str.replace(/\-?(4 ?\/ ?7)/g,".571428");
+	str = str.replace(/\-?(5 ?\/ ?7)/g,".714285");
+	str = str.replace(/\-?(6 ?\/ ?7)/g,".857143");
+	str = str.replace(/\-?(1 ?\/ ?8|⅛)/g,".125");
+	str = str.replace(/\-?(2 ?\/ ?8)/g,".25");
+	str = str.replace(/\-?(3 ?\/ ?8|⅜)/g,".375");
+	str = str.replace(/\-?(5 ?\/ ?8|⅝)/g,".625");
+	str = str.replace(/\-?(7 ?\/ ?8|⅞)/g,".875");
+	str = str.replace(/\-?(1 ?\/ ?9|⅑)/g,".11111");
+	str = str.replace(/\-?(1 ?\/ ?10|⅒)/g,".1");
+	str = str.replace(/\-?(1 ?\/ ?12)/g,".083333");
+	str = str.replace(/\-?(5 ?\/ ?12)/g,".416667");
+	str = str.replace(/\-?(7 ?\/ ?12)/g,".583333");
+	str = str.replace(/\-?(11 ?\/ ?12)/g,".916667");
+	str = str.replace(/\-?(1 ?\/ ?16)/g,".0625");
+	str = str.replace(/\-?(2 ?\/ ?16)/g,".125");
+	str = str.replace(/\-?(3 ?\/ ?16)/g,".1875");
+	str = str.replace(/\-?(4 ?\/ ?16)/g,".25");
+	str = str.replace(/\-?(5 ?\/ ?16)/g,".3125");
+	str = str.replace(/\-?(6 ?\/ ?16)/g,".375");
+	str = str.replace(/\-?(7 ?\/ ?16)/g,".4375");
+	str = str.replace(/\-?(8 ?\/ ?16)/g,".5");
+	str = str.replace(/\-?(9 ?\/ ?16)/g,".5625");
+	str = str.replace(/\-?(10 ?\/ ?16)/g,".625");
+	str = str.replace(/\-?(11 ?\/ ?16)/g,".6825");
+	str = str.replace(/\-?(12 ?\/ ?16)/g,".75");
+	str = str.replace(/\-?(13 ?\/ ?16)/g,".75");
+	str = str.replace(/\-?(13 ?\/ ?16)/g,".8125");
+	str = str.replace(/\-?(14 ?\/ ?16)/g,".875");
+	str = str.replace(/\-?(15 ?\/ ?16)/g,".9375");
+	str = str.replace(/\,/g,"");
 
-	}
+	let oldStr = str;
+
+	str = ProviderMile.find(str);
+	str = ProviderYard.find(str);
+	str = ProviderFeet.find(str);
+	str = ProviderInch.find(str);
 
 	jQuery(findFahrenheit(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\-|\-|\d|\.)+/g));
@@ -620,33 +588,33 @@ function metricateStr(str, forceFluid) {
 
 	})
 
-	jQuery(findInchArray(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
-		console.log(str)
-
-		b = b.replace(/\s?(inches|inch|in)/g,"");
-		console.log(b)
-
-		let newStr = ""
-
-		jQuery(b.match(/(\d|\.)+/g)).each((c,d) => {
-			let num2 = parseFloat(d.match(/(\d|\.)+/g));
-			if (isNaN(num2)) {
-				return;
-			}
-			let replaceMe = convertInch(num2);
-			console.log(d);
-			console.log(num2);
-			console.log(replaceMe);
-			//str = str.replace(d,replaceMe);
-			newStr += replaceMe + " x "
-		})
-
-		newStr = newStr.substring(0,newStr.length-3);
-
-		str = newStr;
-
-	})
+	// jQuery(findInchArray(str)).each((a,b) => {
+	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
+	// 	console.log(str)
+	//
+	// 	b = b.replace(/\s?(inches|inch|in)/g,"");
+	// 	console.log(b)
+	//
+	// 	let newStr = ""
+	//
+	// 	jQuery(b.match(/(\d|\.)+/g)).each((c,d) => {
+	// 		let num2 = parseFloat(d.match(/(\d|\.)+/g));
+	// 		if (isNaN(num2)) {
+	// 			return;
+	// 		}
+	// 		let replaceMe = convertInch(num2);
+	// 		console.log(d);
+	// 		console.log(num2);
+	// 		console.log(replaceMe);
+	// 		//str = str.replace(d,replaceMe);
+	// 		newStr += replaceMe + " x "
+	// 	})
+	//
+	// 	newStr = newStr.substring(0,newStr.length-3);
+	//
+	// 	str = newStr;
+	//
+	// })
 
 	jQuery(findBTU(str)).each((a,b) => {
 		let num = parseFloat(b.replace(/(k|K)/g,"000").replace(/( |,)/g,"").match(/(\d|\.)+/g));
@@ -683,15 +651,15 @@ function metricateStr(str, forceFluid) {
 		str = str.replace(b,convertMilesPerHour(num));
 	})
 
-	jQuery(findMiles(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
-
-		if (isNaN(num)) {
-			return;
-		}
-
-		str = str.replace(b,convertMiles(num));
-	})
+	// jQuery(findMiles(str)).each((a,b) => {
+	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
+	//
+	// 	if (isNaN(num)) {
+	// 		return;
+	// 	}
+	//
+	// 	str = str.replace(b,convertMiles(num));
+	// })
 
 	jQuery(findCubicInch(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
@@ -798,26 +766,26 @@ function metricateStr(str, forceFluid) {
 		str = str.replace(b,convertGallon(num))
 	})
 
-	jQuery(findMil(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
+	// jQuery(findMil(str)).each((a,b) => {
+	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
+	//
+	// 	if (isNaN(num)) {
+	// 		return;
+	// 	}
+	//
+	// 	str = str.replace(b,convertMil(num))
+	// })
 
-		if (isNaN(num)) {
-			return;
-		}
 
-		str = str.replace(b,convertMil(num))
-	})
-
-
-	jQuery(findInch(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
-
-		if (isNaN(num)) {
-			return;
-		}
-
-		str = str.replace(b,convertInch(num))
-	})
+	// jQuery(findInch(str)).each((a,b) => {
+	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
+	//
+	// 	if (isNaN(num)) {
+	// 		return;
+	// 	}
+	//
+	// 	str = str.replace(b,convertInch(num))
+	// })
 
 	jQuery(findSquareInch(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
@@ -839,15 +807,15 @@ function metricateStr(str, forceFluid) {
 		str = str.replace(b,convertSquareFoot(num))
 	})
 
-	jQuery(findFeet(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
-
-		if (isNaN(num)) {
-			return;
-		}
-
-		str = str.replace(b,convertFeet(num))
-	})
+	// jQuery(findFeet(str)).each((a,b) => {
+	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
+	//
+	// 	if (isNaN(num)) {
+	// 		return;
+	// 	}
+	//
+	// 	str = str.replace(b,convertFeet(num))
+	// })
 
 	jQuery(findOunce(str)).each((a,b) => {
 
