@@ -12,7 +12,7 @@ export class ProviderInch extends Provider {
 	}
 
 	static find(str) {
-		return findHelper(str,/[\d\.]+[\.\-\s]?[Ii][Nn][Cc][Hh][Ee]?[Ss]?|[\d\.]+[\.\-]?([Ii][n])(?!-)|[\d\.]+(?=[\s\-]+([Xx]|[Tt][Oo]|[Bb][Yy]|[Oo][Rr]).{0,22}[Ii][Nn][Cc][Hh])|[\d\.]+(?=\-\d+\s?[Ii][Nn][Cc][Hh])/g,(results, str2) => {
+		return findHelper(str,/[\d\.]+[\.\-\s]?inche?s?|[\d\.]+[\.\-]?(in)(?!-)|[\d\.]+(?=[\s\-]+(x|to|by|or).{0,22}inch)|[\d\.]+(?=\-\d+\s?inch)/gi,(results, str2) => {
 
 			var str2 = str2;
 
@@ -38,7 +38,7 @@ export class ProviderInch extends Provider {
 					useDash = true;
 				}
 
-				if (result.match(/[Ee][Ss]/g) !== null) {
+				if (result.match(/es/gi) !== null) {
 					plural = true;
 				}
 

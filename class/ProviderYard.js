@@ -12,7 +12,7 @@ export class ProviderYard extends Provider {
 	}
 
 	static find(str) {
-		return findHelper(str,/[\d\.]+[\.\-\s]?[Yy][Aa]?[Rr]?[Dd][Ss]?|[\d\.]+(?=[\s\-]?(by|x|\*|\-|to)[\s\-\d]+[Yy][Aa][Rr][Dd])/g,(results, str2) => {
+		return findHelper(str,/[\d\.]+[\.\-\s]?ya?r?ds?|[\d\.]+(?=[\s\-]?(by|x|\*|\-|to)[\s\-\d]+yard)/gi,(results, str2) => {
 
 			var str2 = str2;
 
@@ -30,7 +30,7 @@ export class ProviderYard extends Provider {
 					formatLevel = 2;
 				} else if (result.match(/yard/g) !== null) {
 					formatLevel = 1;
-				} else if (result.match(/[Yy][Dd]|\"|”/g) !== null) {
+				} else if (result.match(/yd/gi) !== null) {
 					formatLevel = 0;
 				}
 
@@ -38,7 +38,7 @@ export class ProviderYard extends Provider {
 					useDash = true;
 				}
 
-				if (result.match(/[Yy][Aa]?[Rr]?[Dd][Ss]/g) !== null) {
+				if (result.match(/ya?r?ds/gi) !== null) {
 					plural = true;
 				}
 

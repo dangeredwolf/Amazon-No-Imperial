@@ -12,7 +12,7 @@ export class ProviderMil extends Provider {
 	}
 
 	static find(str) {
-		return findHelper(str,/[\d\.]+\s+([mM][Ii][Ll])(?!\w)/g,(results, str2) => {
+		return findHelper(str,/[\d\.]+\s+(mil)(?!\w)/gi,(results, str2) => {
 
 			var str2 = str2;
 

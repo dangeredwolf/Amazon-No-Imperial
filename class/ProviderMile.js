@@ -12,7 +12,7 @@ export class ProviderMile extends Provider {
 	}
 
 	static find(str) {
-		return findHelper(str,/[\d\.]+[\.\-\s]?[Mm][Ii][Ll][Ee][Ss]?|[\d\.]+(?=[\s\-]?(by|x|\*|\-|to|or)[\s\-\d]+[Mm][Ii][Ll][Ee])|[\d\.]+\s+([mM]i)(?!\w)/g,(results, str2) => {
+		return findHelper(str,/[\d\.]+[\.\-\s]?miles?|[\d\.]+(?=[\s\-]?(by|x|\*|\-|to|or)[\s\-\d]+mile)|[\d\.]+\s+(mi)(?!\w)/gi,(results, str2) => {
 
 			var str2 = str2;
 
@@ -38,7 +38,7 @@ export class ProviderMile extends Provider {
 					useDash = true;
 				}
 
-				if (result.match(/[Mm][Ii][Ll][Ee][Ss]/g) !== null) {
+				if (result.match(/[miles/gi) !== null) {
 					plural = true;
 				}
 

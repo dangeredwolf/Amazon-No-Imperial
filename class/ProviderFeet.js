@@ -12,7 +12,7 @@ export class ProviderFeet extends Provider {
 	}
 
 	static find(str) {
-		return findHelper(str,/[\d\.]+[\.\-\s]?[Ff][OoEe]?[OoEe]?[Tt]|[\d\.]+[\'](?!\w)|[\d\.]+(?=[\s]+([Xx]|[Tt][Oo]|[Bb][Yy]|[Oo][Rr]).+[Ii][Nn][Cc][Hh])/g,(results, str2) => {
+		return findHelper(str,/[\d\.]+[\.\-\s]?f[oe]?[oe]?t|[\d\.]+[\'](?!\w)|[\d\.]+(?=[\s]+(x|to|by|or).+f[eo][eo]t)/gi,(results, str2) => {
 
 			var str2 = str2;
 
