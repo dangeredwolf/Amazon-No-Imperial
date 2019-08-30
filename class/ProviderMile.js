@@ -38,7 +38,7 @@ export class ProviderMile extends Provider {
 					useDash = true;
 				}
 
-				if (result.match(/[miles/gi) !== null) {
+				if (result.match(/miles/gi) !== null) {
 					plural = true;
 				}
 

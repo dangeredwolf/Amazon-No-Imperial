@@ -16,7 +16,7 @@ export function findHelper(str, regex, callback) {
 	if (matches !== null && typeof matches !== "undefined") {
 		return callback(matches, str);
 	}
-	
+
 	return str;
 }
 

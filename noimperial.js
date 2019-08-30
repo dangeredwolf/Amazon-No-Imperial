@@ -14,7 +14,15 @@ import { ProviderYard } from "./class/ProviderYard.js";
 import { ProviderFeet } from "./class/ProviderFeet.js";
 import { ProviderInch } from "./class/ProviderInch.js";
 import { ProviderMil } from "./class/ProviderMil.js";
+
+import { ProviderGallon } from "./class/ProviderGallon.js";
+import { ProviderQuart } from "./class/ProviderQuart.js";
+
+import { ProviderFraction } from "./class/ProviderFraction.js";
+
 import { MeasureMeter } from "./class/MeasureMeter.js";
+import { MeasureLiter } from "./class/MeasureLiter.js";
+import { MeasureGram } from "./class/MeasureGram.js";
 import { roundMe, roundMe10, roundMe100 } from "./class/Rounding.js";
 
 
@@ -60,6 +68,20 @@ let pollingRate = 1000; // 1s
 let isFluid = false;
 let fluidInclude = /(SPRAY|Mascara|Sunscreen|water|Water|Water Bottle|tea|Tea|bottle|Bottle|soda|Soda|Cola|Coke|cola|coke|drink|Drink|Cans?|cans?|Water|water|Pepsi|Gatorade|Soap|soap|Detergent|detergent|Toilet Bowl Cleaner|Spray|Bathroom Cleaner|Cups?|cups?|Broth|milk|Milk|Juice|juice|Cream(er)?|Conditioner|Smoothie|Moisturizer|CC Creme|Gel|gel|Cleaner|cleaner|Spotter|spotter)/g;
 let fluidExclude = /(Bunches of Oats|cereal|Cereal|Kellogg\'s|Residual|Stick|Pudding|Shells & Cheese|Easy Mac|Cookie|Cracker|Ketchup|Sheer Physical|UltiMATTE|Face Stick|Ultra Sport Sunscreen Spray|Sunscreen Sport Performance|Continuous( Sunscreen)? Spray( Broad Spectrum)?|Candy|Candies|candies|candy|gum|Gum|Canister|canister|Ground Coffee|Steak|Slices)/g;
+
+var g_bannedtags = [
+	'STYLE',
+	'SCRIPT',
+	'NOSCRIPT',
+	'TEXTAREA',
+	'IFRAME',
+	'IMG',
+	'I',
+	'DIV',
+	'TBODY',
+	'IMG',
+	'LABEL'
+];
 
 if (typeof urlExchange === "object" && typeof urlExchange.getAttribute === "function") {
 	baseUrl = urlExchange.getAttribute("type");
@@ -520,51 +542,7 @@ function metricateStr(str, forceFluid) {
 	// get rid of fractions
 	console.log(str);
 
-	str = str.replace(/\-?(1 ?\/ ?2|½)/g,".5");
-	str = str.replace(/\-?(1 ?\/ ?3|⅓)/g,".333333");
-	str = str.replace(/\-?(2 ?\/ ?3|⅔)/g,".666666");
-	str = str.replace(/\-?(1 ?\/ ?4|¼)/g,".25");
-	str = str.replace(/\-?(3 ?\/ ?4|¾)/g,".75");
-	str = str.replace(/\-?(1 ?\/ ?5|⅕)/g,".2");
-	str = str.replace(/\-?(2 ?\/ ?5|⅖)/g,".4");
-	str = str.replace(/\-?(3 ?\/ ?5|⅗)/g,".6");
-	str = str.replace(/\-?(4 ?\/ ?5|⅘)/g,".8");
-	str = str.replace(/\-?(1 ?\/ ?6|⅙)/g,".166667");
-	str = str.replace(/\-?(5 ?\/ ?6|⅚)/g,".833333");
-	str = str.replace(/\-?(1 ?\/ ?7|⅐)/g,".142857");
-	str = str.replace(/\-?(2 ?\/ ?7)/g,".285714");
-	str = str.replace(/\-?(3 ?\/ ?7)/g,".428571");
-	str = str.replace(/\-?(4 ?\/ ?7)/g,".571428");
-	str = str.replace(/\-?(5 ?\/ ?7)/g,".714285");
-	str = str.replace(/\-?(6 ?\/ ?7)/g,".857143");
-	str = str.replace(/\-?(1 ?\/ ?8|⅛)/g,".125");
-	str = str.replace(/\-?(2 ?\/ ?8)/g,".25");
-	str = str.replace(/\-?(3 ?\/ ?8|⅜)/g,".375");
-	str = str.replace(/\-?(5 ?\/ ?8|⅝)/g,".625");
-	str = str.replace(/\-?(7 ?\/ ?8|⅞)/g,".875");
-	str = str.replace(/\-?(1 ?\/ ?9|⅑)/g,".11111");
-	str = str.replace(/\-?(1 ?\/ ?10|⅒)/g,".1");
-	str = str.replace(/\-?(1 ?\/ ?12)/g,".083333");
-	str = str.replace(/\-?(5 ?\/ ?12)/g,".416667");
-	str = str.replace(/\-?(7 ?\/ ?12)/g,".583333");
-	str = str.replace(/\-?(11 ?\/ ?12)/g,".916667");
-	str = str.replace(/\-?(1 ?\/ ?16)/g,".0625");
-	str = str.replace(/\-?(2 ?\/ ?16)/g,".125");
-	str = str.replace(/\-?(3 ?\/ ?16)/g,".1875");
-	str = str.replace(/\-?(4 ?\/ ?16)/g,".25");
-	str = str.replace(/\-?(5 ?\/ ?16)/g,".3125");
-	str = str.replace(/\-?(6 ?\/ ?16)/g,".375");
-	str = str.replace(/\-?(7 ?\/ ?16)/g,".4375");
-	str = str.replace(/\-?(8 ?\/ ?16)/g,".5");
-	str = str.replace(/\-?(9 ?\/ ?16)/g,".5625");
-	str = str.replace(/\-?(10 ?\/ ?16)/g,".625");
-	str = str.replace(/\-?(11 ?\/ ?16)/g,".6825");
-	str = str.replace(/\-?(12 ?\/ ?16)/g,".75");
-	str = str.replace(/\-?(13 ?\/ ?16)/g,".75");
-	str = str.replace(/\-?(13 ?\/ ?16)/g,".8125");
-	str = str.replace(/\-?(14 ?\/ ?16)/g,".875");
-	str = str.replace(/\-?(15 ?\/ ?16)/g,".9375");
-	str = str.replace(/\,/g,"");
+	str = ProviderFraction.find(str);
 
 	let oldStr = str;
 
@@ -572,6 +550,8 @@ function metricateStr(str, forceFluid) {
 	str = ProviderYard.find(str);
 	str = ProviderFeet.find(str);
 	str = ProviderInch.find(str);
+	str = ProviderMil.find(str);
+	str = ProviderGallon.find(str);
 
 	jQuery(findFahrenheit(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\-|\-|\d|\.)+/g));
@@ -587,34 +567,6 @@ function metricateStr(str, forceFluid) {
 		str = str.replace(/ ?((°|degrees?|Degrees?) ?F|℉)/g,"");
 
 	})
-
-	// jQuery(findInchArray(str)).each((a,b) => {
-	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
-	// 	console.log(str)
-	//
-	// 	b = b.replace(/\s?(inches|inch|in)/g,"");
-	// 	console.log(b)
-	//
-	// 	let newStr = ""
-	//
-	// 	jQuery(b.match(/(\d|\.)+/g)).each((c,d) => {
-	// 		let num2 = parseFloat(d.match(/(\d|\.)+/g));
-	// 		if (isNaN(num2)) {
-	// 			return;
-	// 		}
-	// 		let replaceMe = convertInch(num2);
-	// 		console.log(d);
-	// 		console.log(num2);
-	// 		console.log(replaceMe);
-	// 		//str = str.replace(d,replaceMe);
-	// 		newStr += replaceMe + " x "
-	// 	})
-	//
-	// 	newStr = newStr.substring(0,newStr.length-3);
-	//
-	// 	str = newStr;
-	//
-	// })
 
 	jQuery(findBTU(str)).each((a,b) => {
 		let num = parseFloat(b.replace(/(k|K)/g,"000").replace(/( |,)/g,"").match(/(\d|\.)+/g));
@@ -650,16 +602,6 @@ function metricateStr(str, forceFluid) {
 
 		str = str.replace(b,convertMilesPerHour(num));
 	})
-
-	// jQuery(findMiles(str)).each((a,b) => {
-	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
-	//
-	// 	if (isNaN(num)) {
-	// 		return;
-	// 	}
-	//
-	// 	str = str.replace(b,convertMiles(num));
-	// })
 
 	jQuery(findCubicInch(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
@@ -755,38 +697,6 @@ function metricateStr(str, forceFluid) {
 
 		str = str.replace(b,convertGPM(num))
 	})
-
-	jQuery(findGallon(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
-
-		if (isNaN(num)) {
-			return;
-		}
-
-		str = str.replace(b,convertGallon(num))
-	})
-
-	// jQuery(findMil(str)).each((a,b) => {
-	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
-	//
-	// 	if (isNaN(num)) {
-	// 		return;
-	// 	}
-	//
-	// 	str = str.replace(b,convertMil(num))
-	// })
-
-
-	// jQuery(findInch(str)).each((a,b) => {
-	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
-	//
-	// 	if (isNaN(num)) {
-	// 		return;
-	// 	}
-	//
-	// 	str = str.replace(b,convertInch(num))
-	// })
-
 	jQuery(findSquareInch(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
@@ -852,15 +762,7 @@ function metricateStr(str, forceFluid) {
 
 function canMetricate(str) {
 	return true
-	// return findInch(str) !== null ||
-	// findOunce(str) !== null ||
-	// findFluidOunce(str) !== null ||
-	// findPound(str) !== null ||
-	// findFeet(str) !== null || false
 }
-
-
-var g_bannedtags = ['STYLE', 'SCRIPT', 'NOSCRIPT', 'TEXTAREA', 'IFRAME', 'IMG', 'I', 'DIV', 'TBODY', 'IMG', 'LABEL'];
 
 function metricateObj(obj, forceFluid) {
 	if (typeof obj === "undefined") {
