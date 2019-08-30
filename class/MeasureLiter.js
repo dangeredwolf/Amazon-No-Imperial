@@ -13,7 +13,7 @@ export class MeasureLiter extends Measure {
 			throw "val is undefined!!"
 		}
 		 if (this.val < 1) { // mL
-			let newVal = this.val / .01;
+			let newVal = this.val * 1000 + 1;
 			switch(this.formatLevel) {
 				case 0: return Math.floor(newVal) + separator + "mL";
 				case 1: return Math.floor(newVal) + separator + "milliliter" + (this.plural ? "s" : "");

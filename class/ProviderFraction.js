@@ -2,15 +2,16 @@ import { Provider } from "./Provider.js";
 import { assert, findHelper, validate } from "./HelperFunctions.js";
 
 export class ProviderFraction extends Provider {
+
 	constructor() {
-		super()
+		super();
 	}
 
-	static convert(num) {
+	convert(num) {
 		return num;
 	}
 
-	static find(str) {
+	find(str) {
 		str = str.replace(/\-?(1 ?\/ ?2|½)/g,".5");
 		str = str.replace(/\-?(1 ?\/ ?3|⅓)/g,".333333");
 		str = str.replace(/\-?(2 ?\/ ?3|⅔)/g,".666666");

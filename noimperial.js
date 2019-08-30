@@ -15,13 +15,21 @@ import { ProviderFeet } from "./class/ProviderFeet.js";
 import { ProviderInch } from "./class/ProviderInch.js";
 import { ProviderMil } from "./class/ProviderMil.js";
 
+import { ProviderGallonPerMinute } from "./class/ProviderGallonPerMinute.js";
+
 import { ProviderGallon } from "./class/ProviderGallon.js";
 import { ProviderQuart } from "./class/ProviderQuart.js";
+import { ProviderPint } from "./class/ProviderPint.js";
+import { ProviderCup } from "./class/ProviderCup.js";
+import { ProviderFluidOunce } from "./class/ProviderFluidOunce.js";
+
+import { ProviderPound } from "./class/ProviderPound.js";
 
 import { ProviderFraction } from "./class/ProviderFraction.js";
 
 import { MeasureMeter } from "./class/MeasureMeter.js";
 import { MeasureLiter } from "./class/MeasureLiter.js";
+import { MeasureLiterPerMinute } from "./class/MeasureLiterPerMinute.js";
 import { MeasureGram } from "./class/MeasureGram.js";
 import { roundMe, roundMe10, roundMe100 } from "./class/Rounding.js";
 
@@ -90,45 +98,12 @@ if (typeof urlExchange === "object" && typeof urlExchange.getAttribute === "func
 	throw "uh... where is urlExchange?";
 }
 
-function findInch(str) {
-	if (!validate(str)) return;
-
-	let matches = str.match(/(?![\"|\#|\$])(\d|\.)+(\s|-)?(inch(es)?|in\.|Inch(es)?|”|In\.|\")[^\-]/g);
-
-}
-
-function findMil(str) {
-	if (!validate(str)) return;
-
-	return str.match(/(\d|\.)+(\s|-)?(mil)[^le]/g)
-}
-
-function findGallon(str) {
-	return str.match(/(\d|\.)+(\s|-)?(Gallons?|gallons?|gal\.?|Gal\.?)/g)
-}
-
 function findGPM(str) {
 	return str.match(/(\d|\.)+(\s|-)?(GPM|gpm|Gpm)/g)
 }
 
-function findQuart(str) {
-	return str.match(/(\d|\.)+(\s|-)?(quarts?|qt\.?|Quarts?)/g)
-}
-
-function findInchArray(str) {
-	return str.match(/(((\d|\.)+\s?(\*|x|by)\s?)?(\d|\.)+\s?(\*|x|by)\s?(\d|\.)+\s?(((i|I)nch(es)?)|in)|((\(?(i|I)nch(es)?))\s?\s?((\d|\.)+\s?(\*|x|by)\s?)?((\d|\.)+\s?(\*|x|by)\s?)(\d|\.)+)/g)
-}
-
-function findFeet(str) {
-	return str.match(/((\d|\.)+(\'))|((\d|\.)+\s?(x|\*|by)\s?)?((\d|\.)+ ?(x|\*\ ) ?)?(\d|\.)+(\s|-)?(feet|foot|ft|Feet|Foot|\'|FT|Ft)/g)
-}
-
 function findOunce(str) {
 	return str.match(/(\d|\.)+(\s|-)?(oz\.?|ounces?|Ounces?|Oz\.?|OZ\.?)/g)
-}
-
-function findFluidOunce(str) {
-	return str.match(/(\d|\.)+(\s\s?|\-)?(U\.?S\.? fl\.?.?oz\.?|fl\.?.?oz?\.?|floz|fluid ?oz?\.?|fluid ?ounc?e?s?|Fluid ?ounc?e?s?|fluid ?Ounc?e?s?|Fluid ?Ounc?e?s?|fl\.? ounc?e?s?|Fl\.? ounc?e?s?|FL\.? ounc?e?s?|FL\.? Ounc?e?s?|Fl\.?.?Oz?\.?|Fl\.?.?oz?\.?|FL\.?.OZ?\.?)/g)
 }
 
 function findCubicFoot(str) {
@@ -151,10 +126,6 @@ function findSquareInch(str) {
 	return str.match(/(\d|\.)+.?(sq\.? in\.?|square.inches|square.inch|Square.inches|Square.inch|Square.inches|Square.inch|SQ IN|Sq\.? In\.?)/g)
 }
 
-function findPound(str) {
-	return str.match(/(\d|\.)+(\s)?(lbs?|pounds?|Pounds?|LBS?|Lbs?)/g)
-}
-
 function findPerPound(str) {
 	return str.match(/\(\$(\d|\.)+ \/  ?Pound\)/g)
 }
@@ -169,10 +140,6 @@ function findPerFluidOunce(str) {
 
 function findMilesPerHour(str) {
 	return str.match(/(\d|\.)+ ?(mph|MPH|miles? per hour|miles?\/hour|mi\/h|miles? an hour|Miles? Per Hour|Miles? per Hour|Miles? per hour)/g)
-}
-
-function findMiles(str) {
-	return str.match(/(\d|\.)+ ?(miles?|Miles?|mi\.|Mi\.(^\.\.))/g)
 }
 
 function findFahrenheit(str) {
@@ -214,12 +181,6 @@ function convertMilesPerHour(mph) {
 	let conversion = (mph * 1.60934);
 
 	return Math.floor(conversion + .5) + " km/h"
-}
-
-function convertMiles(mph) {
-	let conversion = (mph * 1.60934);
-
-	return Math.floor(conversion + .5) + " km"
 }
 
 function convertCFM(cuft) {
@@ -269,173 +230,10 @@ function convertSquareInch(sqin) {
 	}
 }
 
-function convertGallon(gal) {
-	let conversion = roundMe(gal * 3.7854);
-
-	if (conversion >= 1) {
-		return conversion + " L "
-	} else {
-		return Math.floor(conversion*1000) + " mL "
-	}
-}
-
 function convertGPM(gal) {
 	let conversion = roundMe(gal * 3.7854);
 
 	return conversion + " L/min "
-}
-
-function convertQuart(qt) {
-	console.log(qt)
-	let conversion = roundMe10(qt * 946.353);
-
-	if (conversion >= 1) {
-		return conversion + " L"
-	} else {
-		return Math.floor(conversion) + " mL"
-	}
-}
-
-function convertFluidOunce(ounce) {
-	console.log(ounce)
-	let conversion = roundMe(ounce * 29.5735);
-
-	if (conversion >= 1000) {
-		return roundMe(conversion/1000) + " L"
-	} else {
-		let temp = Math.ceil(conversion) + " mL";
-
-		if (temp === "4 mL") {
-			return "5 mL";
-		}
-
-		if (temp === "74 mL") {
-			return "75 mL";
-		}
-		if (temp === "89 mL") {
-			return "90 mL";
-		}
-		if (temp === "101 mL") {
-			return "100 mL";
-		}
-		if (temp === "104 mL") {
-			return "105 mL";
-		}
-		if (temp === "119 mL") {
-			return "120 mL";
-		}
-		if (temp === "147 mL") {
-			return "150 mL";
-		}
-		if (temp === "148 mL") {
-			return "150 mL";
-		}
-		if (temp === "178 mL") {
-			return "180 mL";
-		}
-		if (temp === "199 mL") {
-			return "200 mL";
-		}
-		if (temp === "198 mL") {
-			return "200 mL";
-		}
-		if (temp === "202 mL") {
-			return "200 mL";
-		}
-		if (temp === "237 mL") { // hack to use US legal cup
-			return "240 mL";
-		}
-		if (temp === "249 mL") {
-			return "250 mL";
-		}
-		if (temp === "252 mL") {
-			return "250 mL";
-		}
-		if (temp === "281 mL") {
-			return "280 mL";
-		}
-		if (temp === "332 mL") {
-			return "330 mL";
-		}
-		if (temp === "341 mL") {
-			return "340 mL";
-		}
-		if (temp === "474 mL") {
-			return "475 mL";
-		}
-		if (temp === "503 mL") { // go fuck yourself Sparkling Ice brand water
-			return "500 mL";
-		}
-		if (temp === "621 mL") {
-			return "620 mL";
-		}
-		if (temp === "651 mL") {
-			return "650 mL";
-		}
-		if (temp === "681 mL") {
-			return "680 mL";
-		}
-		if (temp === "749 mL") {
-			return "750 mL";
-		}
-		if (temp === "1000 mL") { // not sure why my code @ if(conversion >= 1000) ignores me so here
-			return "1 L";
-		}
-		return temp;
-	}
-}
-
-function convertOunce(ounce) {
-	console.log(ounce)
-
-	if (isNaN(ounce)) {
-		throw "Ounce is not a number"
-	}
-
-	let conversion = roundMe(ounce * 28.35);
-
-	if (conversion >= 1000) {
-		return roundMe(conversion/1000) + " kg"
-	} else {
-		let asdf = Math.floor(conversion+.5);
-		if (asdf.toString().substring(1,2) === "99") {
-			asdf = asdf + 1;
-		}
-		if (asdf === 29 || asdf === 28) {
-			return "30g";
-		}
-		if (asdf === 51) {
-			return "50g";
-		}
-		if (asdf === 57) {
-			return "56g"
-		}
-		if (asdf === 58 || asdf === 59) {
-			return "60g";
-		}
-		if (asdf === 71) {
-			return "70g";
-		}
-		if (asdf === 79) {
-			return "80g";
-		}
-		if (asdf === 91) {
-			return "90g";
-		}
-		if (asdf === 198) {
-			return "200g";
-		}
-		if (asdf === 374) {
-			return "375g";
-		}
-		if (asdf === 397) {
-			return "400g";
-		}
-		if (asdf === 794) {
-			return "800g";
-		}
-		return asdf + "g "
-	}
 }
 
 function convertPerFluidOunce(ounce) {
@@ -470,88 +268,30 @@ function convertPerPound(pound) {
 	return "($" + roundMe(conversion) + " / kg)"
 }
 
-function convertLbs(lbs) {
-	console.log(lbs)
-	let conversion = roundMe(lbs * 453.6);
-
-	if (conversion >= 998) {
-		return roundMe(conversion/1000) + " kg"
-	} else {
-		let asdf = Math.floor(conversion+.5);
-		if (asdf.toString().substring(1,2) === "99") {
-			asdf = asdf + 1;
-		}
-		console.log(asdf.toString().substring(1,2))
-		return asdf + "g "
-	}
-}
-
-function convertInch(inch) {
-	if (isNaN(inch)) {
-		return;
-	}
-
-	let conversion = roundMe(inch * 25.4);
-	let result = "";
-	if (conversion >= 1000) {
-		result = roundMe(conversion/1000) + " m "
-	} else if (conversion > 100) {
-		result = roundMe10(conversion/10) + " cm "
-	} else {
-		result = Math.floor(conversion) + " mm "
-	}
-
-	if (result === "9 mm ") { // hack to get around rounding errors
-		return "10 mm ";
-	}
-	if (result === "99 mm ") { // hack to get around rounding errors
-		return "100 mm ";
-	}
-	if (result === "1.02 m ") { // hack to get around rounding errors
-		return "1 m ";
-	}
-	return result
-}
-
-function convertMil(mil) {
-	let conversion = roundMe(mil * 25.4);
-
-	return Math.floor(conversion+.5) + " µm"
-}
-
-function convertFeet(feet) {
-	let conversion = roundMe(feet * 0.3048);
-
-	let result = ""
-
-	if (conversion >= 1) {
-		result = roundMe10(conversion) + " m "
-	} else {
-		result = roundMe10(conversion*100) + " cm "
-	}
-
-	if (result === "3.05 m ") { // 10 ft -> 3 m
-		return "3 m"
-	}
-
-	return result;
-}
-
 function metricateStr(str, forceFluid) {
 
 	// get rid of fractions
 	console.log(str);
 
-	str = ProviderFraction.find(str);
+	str = new ProviderFraction().find(str);
 
 	let oldStr = str;
 
-	str = ProviderMile.find(str);
-	str = ProviderYard.find(str);
-	str = ProviderFeet.find(str);
-	str = ProviderInch.find(str);
-	str = ProviderMil.find(str);
-	str = ProviderGallon.find(str);
+	str = new ProviderMile().find(str);
+	str = new ProviderYard().find(str);
+	str = new ProviderFeet().find(str);
+	str = new ProviderInch().find(str);
+	str = new ProviderMil().find(str);
+
+	str = new ProviderGallonPerMinute().find(str);
+
+	str = new ProviderGallon().find(str);
+	str = new ProviderQuart().find(str);
+	str = new ProviderPint().find(str);
+	str = new ProviderCup().find(str);
+	str = new ProviderFluidOunce().find(str);
+
+	str = new ProviderPound().find(str);
 
 	jQuery(findFahrenheit(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\-|\-|\d|\.)+/g));
@@ -652,7 +392,7 @@ function metricateStr(str, forceFluid) {
 
 		// We have to do some inferencing because "ounce" is ambiguous between fluid ounce and ounce
 		if (forceFluid) {
-			str = str.replace(b,convertFluidOunce(num));
+			// str = str.replace(b,convertFluidOunce(num));
 		}
 
 		str = str.replace(b,convertPerOunce(num));
@@ -668,26 +408,6 @@ function metricateStr(str, forceFluid) {
 		str = str.replace(b,convertPerFluidOunce(num))
 	})
 
-	jQuery(findFluidOunce(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
-
-		if (isNaN(num)) {
-			return;
-		}
-
-		str = str.replace(b,convertFluidOunce(num))
-	})
-
-	jQuery(findQuart(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
-
-		if (isNaN(num)) {
-			return;
-		}
-
-		str = str.replace(b,convertQuart(num))
-	})
-
 	jQuery(findGPM(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
@@ -697,6 +417,7 @@ function metricateStr(str, forceFluid) {
 
 		str = str.replace(b,convertGPM(num))
 	})
+
 	jQuery(findSquareInch(str)).each((a,b) => {
 		let num = parseFloat(b.match(/(\d|\.)+/g));
 
@@ -717,16 +438,6 @@ function metricateStr(str, forceFluid) {
 		str = str.replace(b,convertSquareFoot(num))
 	})
 
-	// jQuery(findFeet(str)).each((a,b) => {
-	// 	let num = parseFloat(b.match(/(\d|\.)+/g));
-	//
-	// 	if (isNaN(num)) {
-	// 		return;
-	// 	}
-	//
-	// 	str = str.replace(b,convertFeet(num))
-	// })
-
 	jQuery(findOunce(str)).each((a,b) => {
 
 		let num = parseFloat(b.match(/(\d|\.)+/g));
@@ -737,21 +448,11 @@ function metricateStr(str, forceFluid) {
 
 		// We have to do some inferencing because "ounce" is ambiguous between fluid ounce and ounce
 		if ((str.match(fluidInclude) !== null && str.match(fluidExclude) === null) || forceFluid) {
-			str = str.replace(b,convertFluidOunce(num));
+			// str = str.replace(b,convertFluidOunce(num));
 		}
 
-		str = str.replace(b,convertOunce(num));
-		console.log(convertOunce(num))
-	})
-
-	jQuery(findPound(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\d|\.)+/g));
-
-		if (isNaN(num)) {
-			return;
-		}
-
-		str = str.replace(b,convertLbs(num));
+		// str = str.replace(b,convertOunce(num));
+		// console.log(convertOunce(num))
 	})
 
 
