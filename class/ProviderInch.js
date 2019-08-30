@@ -5,7 +5,7 @@ export class ProviderInch extends Provider {
 
 	constructor() {
 		super();
-		this.regexFind = /[\d\.]+[\.\-\s]?inche?s?|[\d\.]+[\.\-]?(in)(?!-)|[\d\.]+(?=[\s\-]+(x|to|by|or|-|\*|\/)[\dtobyrx\s\/\.\*\+-]+inch)|[\d\.]+(?=\-\d+\s?inch)/gi;
+		this.regexFind = /[\d\.]+[\.\-\s]?inche?s?|[\d\.]+[\.\-]?(in|\")(?!-)|[\d\.]+(?=[\s\-]+(x|to|by|or|-|\*|\/)[\dtobyrx\s\/\.\*\+-]+inch)|[\d\.]+(?=\-\d+\s?inch)/gi;
 		this.regexUppercase = /INCH/g;
 		this.regexCapitalized = /Inch/g;
 		this.regexLowercase = /inch/g;

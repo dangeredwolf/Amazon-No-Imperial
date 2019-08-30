@@ -13,7 +13,6 @@ export class ProviderQuart extends Provider {
 		this.regexPlural = /quarts/gi;
 	}
 
-
 	convert(num) {
 		return new MeasureLiter(num * 0.946353);
 	}

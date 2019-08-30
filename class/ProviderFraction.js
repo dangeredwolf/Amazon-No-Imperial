@@ -1,5 +1,5 @@
 import { Provider } from "./Provider.js";
-import { assert, findHelper, validate } from "./HelperFunctions.js";
+import { assert, findHelper, validate } from "./UtilityHelperFuncs.js";
 
 export class ProviderFraction extends Provider {
 

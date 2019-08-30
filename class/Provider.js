@@ -1,4 +1,4 @@
-import { assert, findHelper, validate } from "./HelperFunctions.js";
+import { assert, findHelper, validate } from "./UtilityHelperFuncs.js";
 
 export class Provider {
 
@@ -9,6 +9,7 @@ export class Provider {
 	regexAbbrev;
 	regexPlural;
 	regexDash = /\-/g;
+	regexPlus = /\+(?=\d)/g;
 	regexMatchDigit = /[\d\.]+/g;
 
 	constructor() {
@@ -50,7 +51,7 @@ export class Provider {
 					plural = true;
 				}
 
-				str2 = str2.replace(result, this.convert(parseFloat(result.match(this.regexMatchDigit))).setFormatLevel(formatLevel).setPlural(plural).setUseDash(useDash).format())
+				str2 = str2.replace(result, this.convert(parseFloat(result.replace(this.regexPlus,"").match(this.regexMatchDigit))).setFormatLevel(formatLevel).setPlural(plural).setUseDash(useDash).format())
 			})
 
 			return str2;

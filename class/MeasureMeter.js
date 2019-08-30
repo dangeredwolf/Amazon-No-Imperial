@@ -1,5 +1,5 @@
 import { Measure } from "./Measure.js";
-import { roundMe, roundMe10, roundMe100 } from "./Rounding.js";
+import { roundMe, roundMe10, roundMe100 } from "./UtilityRounding.js";
 
 export class MeasureMeter extends Measure {
 	constructor(val) {

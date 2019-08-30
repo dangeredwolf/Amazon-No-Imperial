@@ -1,6 +1,6 @@
 import { Measure } from "./Measure.js";
 import { MeasureLiter } from "./MeasureLiter.js";
-import { roundMe, roundMe10, roundMe100 } from "./Rounding.js";
+import { roundMe, roundMe10, roundMe100 } from "./UtilityRounding.js";
 
 export class MeasureLiterPerMinute extends MeasureLiter {
 	constructor(val) {

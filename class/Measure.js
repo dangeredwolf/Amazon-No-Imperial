@@ -1,10 +1,11 @@
 export class Measure {
 
-	/*	0: abbreviation
+	/*	FormatLevel
+		0: abbreviation
 		1: full lowercase
 		2: full capitalized
 		3: full uppercase
-		4: number only, do not display unit
+		4: number only, do not display unit (useful for ranges)
 	*/
 	formatLevel = 0;
 	plural = false;

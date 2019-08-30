@@ -8,7 +8,7 @@
 */
 "use strict";
 
-import { assert, findHelper, validate } from "./class/HelperFunctions.js";
+import { assert, findHelper, validate } from "./class/UtilityHelperFuncs.js";
 import { ProviderMile } from "./class/ProviderMile.js";
 import { ProviderYard } from "./class/ProviderYard.js";
 import { ProviderFeet } from "./class/ProviderFeet.js";
@@ -24,14 +24,13 @@ import { ProviderCup } from "./class/ProviderCup.js";
 import { ProviderFluidOunce } from "./class/ProviderFluidOunce.js";
 
 import { ProviderPound } from "./class/ProviderPound.js";
+import { ProviderOunce } from "./class/ProviderOunce.js";
+
+import { ProviderFahrenheit } from "./class/ProviderFahrenheit.js";
 
 import { ProviderFraction } from "./class/ProviderFraction.js";
 
-import { MeasureMeter } from "./class/MeasureMeter.js";
-import { MeasureLiter } from "./class/MeasureLiter.js";
-import { MeasureLiterPerMinute } from "./class/MeasureLiterPerMinute.js";
-import { MeasureGram } from "./class/MeasureGram.js";
-import { roundMe, roundMe10, roundMe100 } from "./class/Rounding.js";
+import { roundMe, roundMe10, roundMe100 } from "./class/UtilityRounding.js";
 
 
 let baseUrl;
@@ -292,21 +291,9 @@ function metricateStr(str, forceFluid) {
 	str = new ProviderFluidOunce().find(str);
 
 	str = new ProviderPound().find(str);
+	str = new ProviderOunce().find(str);
 
-	jQuery(findFahrenheit(str)).each((a,b) => {
-		let num = parseFloat(b.match(/(\-|\-|\d|\.)+/g));
-
-
-		b = b.replace(/ ?((°|degrees?|Degrees?) ?F|℉)/g,"");
-
-		jQuery(b.match(/(\-|\d)+/g)).each((c,d) => {
-			let num2 = parseFloat(d.replace(/ ?((°|degrees?|Degrees?) ?F|℉)/g,"").match(/(\-|\-|\d|\.)+/g));
-			str = str.replace(d,convertFahrenheit(num2));
-		})
-
-		str = str.replace(/ ?((°|degrees?|Degrees?) ?F|℉)/g,"");
-
-	})
+	str = new ProviderFahrenheit().find(str);
 
 	jQuery(findBTU(str)).each((a,b) => {
 		let num = parseFloat(b.replace(/(k|K)/g,"000").replace(/( |,)/g,"").match(/(\d|\.)+/g));
