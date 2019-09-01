@@ -11,6 +11,7 @@ export class Measure {
 	plural = false;
 	val = 0;
 	useDash = false;
+	roundingData = {};
 
 	setVal(a) {
 		this.val = a;
@@ -34,5 +35,16 @@ export class Measure {
 
 	format() {
 		return "";
+	}
+
+	formatRounding(num) {
+		Object.keys(this.roundingData).forEach((item) => {
+			if (num === parseFloat(item)) {
+				let a = parseFloat(this.roundingData[item]);
+				// debugger;
+				return a;
+			}
+		});
+		return num;
 	}
 }

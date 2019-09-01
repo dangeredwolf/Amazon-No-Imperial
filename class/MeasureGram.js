@@ -7,6 +7,14 @@ export class MeasureGram extends Measure {
 		this.val = val;
 	}
 
+	roundGram(num) {
+		if (num > 5) {
+			return Math.floor(num + .5);
+		} else {
+			return roundMe10(num);
+		}
+	}
+
 	format() {
 		let separator = this.useDash ? "-" : " ";
 		if (typeof this.val === "undefined") {
@@ -32,11 +40,11 @@ export class MeasureGram extends Measure {
 			}
 		} else { // otherwise g
 			switch(this.formatLevel) {
-				case 0: return roundMe100(this.val) + separator + "g";
-				case 1: return roundMe100(this.val) + separator + "gram" + (this.plural ? "s" : "");
-				case 2: return roundMe100(this.val) + separator + "Gram" + (this.plural ? "s" : "");
-				case 3: return roundMe100(this.val) + separator + "GRAM" + (this.plural ? "S" : "");
-				case 4: return roundMe100(this.val);
+				case 0: return this.roundGram(this.val) + separator + "g";
+				case 1: return this.roundGram(this.val) + separator + "gram" + (this.plural ? "s" : "");
+				case 2: return this.roundGram(this.val) + separator + "Gram" + (this.plural ? "s" : "");
+				case 3: return this.roundGram(this.val) + separator + "GRAM" + (this.plural ? "S" : "");
+				case 4: return this.roundGram(this.val);
 			}
 		}
 	}

@@ -5,7 +5,7 @@ export class ProviderOunce extends Provider {
 
 	constructor() {
 		super();
-		this.regexFind = /[\d\.]+[\.\-\s]?o(z|unce)[s\.]?|[\d\.]+(?=[\s\-]?(\-|to|or|\/)[\s\-\d]+o(z|unce)[s\.]?)/gi;
+		this.regexFind = /[\d\.]+[\.\-\s]{0,99}o(z|unce)[s\.]?|[\d\.]+(?=[\s\-]?(\-|to|or|\/)[\s\-\d]+o(z|unce)[s\.]?)/gi;
 		this.regexUppercase = /OUNCES?/g;
 		this.regexCapitalized = /Ounces?/g;
 		this.regexLowercase = /ounces?/g;

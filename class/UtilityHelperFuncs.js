@@ -1,8 +1,16 @@
+const disableRequiredArgChecks = true;
+
 export function assert(thing, msg) {
 	if (typeof thing !== "undefined" && thing !== null) {
 		return true;
 	} else {
 		throw msg || "Assertion failed";
+	}
+}
+
+if (disableRequiredArgChecks) {
+	assert = () => {
+		return true
 	}
 }
 

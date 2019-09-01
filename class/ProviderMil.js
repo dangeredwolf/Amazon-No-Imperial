@@ -9,12 +9,12 @@ export class ProviderMil extends Provider {
 		this.regexUppercase = /(?!)/g;
 		this.regexCapitalized = /(?!)/g;
 		this.regexLowercase = /(?!)/g;
-		this.regexAbbrev = /(?!)/g;
+		this.regexAbbrev = /(?=)/g;
 		this.regexPlural = /(?!)/g;
 	}
 
 	convert(num) {
-		return new MeasureMeter(num * 0.0254);
+		return new MeasureMeter(num * 0.0000254);
 	}
-	
+
 }

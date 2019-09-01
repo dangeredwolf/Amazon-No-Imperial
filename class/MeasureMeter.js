@@ -12,7 +12,16 @@ export class MeasureMeter extends Measure {
 		if (typeof this.val === "undefined") {
 			throw "val is undefined!!"
 		}
-		if (this.val < 0.03) { // millimeter
+		if (this.val < 0.0003) { // micrometer
+			let newVal = this.val / .000001;
+			switch(this.formatLevel) {
+				case 0: return roundMe10(newVal) + separator + "μm";
+				case 1: return roundMe10(newVal) + separator + "micrometer" + (this.plural ? "s" : "");
+				case 2: return roundMe10(newVal) + separator + "Micrometer" + (this.plural ? "s" : "");
+				case 3: return roundMe10(newVal) + separator + "MICROMETER" + (this.plural ? "S" : "");
+				case 4: return roundMe10(newVal);
+			}
+		} else if (this.val < 0.03) { // millimeter
 			let newVal = this.val / .001;
 			switch(this.formatLevel) {
 				case 0: return roundMe10(newVal) + separator + "mm";

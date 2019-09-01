@@ -8,9 +8,11 @@ export class Provider {
 	regexLowercase;
 	regexAbbrev;
 	regexPlural;
+	matchPer;
 	regexDash = /\-/g;
-	regexPlus = /\+(?=\d)/g;
-	regexMatchDigit = /[\d\.]+/g;
+	regexPlus = /(?!)/g;//\+(?=\d)/g;
+	regexMatchDigit = /\-?[\d\.]+/g;
+	regexMatchDigitRaw = /\-?[\d\.]+/g;
 
 	constructor() {
 		return this;
@@ -51,7 +53,9 @@ export class Provider {
 					plural = true;
 				}
 
-				str2 = str2.replace(result, this.convert(parseFloat(result.replace(this.regexPlus,"").match(this.regexMatchDigit))).setFormatLevel(formatLevel).setPlural(plural).setUseDash(useDash).format())
+				let tmp = result.replace(this.regexPlus,"").match(this.regexMatchDigit);
+
+				str2 = str2.replace(result, this.convert(parseFloat(tmp)).setFormatLevel(formatLevel).setPlural(plural).setUseDash(useDash).format())
 			})
 
 			return str2;

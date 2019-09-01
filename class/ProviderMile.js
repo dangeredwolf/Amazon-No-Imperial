@@ -14,7 +14,7 @@ export class ProviderMile extends Provider {
 	}
 
 	convert(num) {
-		return new MeasureMeter(num * 1.60934);
+		return new MeasureMeter(num * 1609.34);
 	}
 
 }
