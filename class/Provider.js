@@ -54,8 +54,17 @@ export class Provider {
 				}
 
 				let tmp = result.replace(this.regexPlus,"").match(this.regexMatchDigit);
+				let thing;
 
-				str2 = str2.replace(result, this.convert(parseFloat(tmp)).setFormatLevel(formatLevel).setPlural(plural).setUseDash(useDash).format())
+				try {
+					thing = this.convert(parseFloat(tmp))
+				} catch(e) {}
+
+				if (typeof thing === "undefined") {
+					return;
+				}
+
+				str2 = str2.replace(result, thing.setFormatLevel(formatLevel).setPlural(plural).setUseDash(useDash).format())
 			})
 
 			return str2;

@@ -42,7 +42,7 @@ export class Measure {
 			if (num === parseFloat(item)) {
 				let a = parseFloat(this.roundingData[item]);
 				// debugger;
-				return a;
+				num = a;
 			}
 		});
 		return num;

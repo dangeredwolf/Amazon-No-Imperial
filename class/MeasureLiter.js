@@ -6,8 +6,28 @@ export class MeasureLiter extends Measure {
 		super();
 		this.val = val;
 		this.roundingData = {
+			4:5,
+			74:75,
+			89:90,
+			101:100,
+			104:105,
+			119:120,
+			147:150,
+			148:150,
+			178:180,
+			198:200,
+			199:200,
 			237:240,
-			474:475
+			249:250,
+			252:250,
+			281:280,
+			332:330,
+			474:475,
+			503:500,
+			621:620,
+			651:650,
+			681:680,
+			749:750
 		}
 	}
 
@@ -16,7 +36,7 @@ export class MeasureLiter extends Measure {
 		if (typeof this.val === "undefined") {
 			throw "val is undefined!!"
 		}
-		 if (this.val < 1) { // mL
+		 if (this.val < 0.9995) { // mL
 			let newVal = this.formatRounding(Math.floor(this.val * 1000 + 1));
 			switch(this.formatLevel) {
 				case 0: return newVal + separator + "mL";
@@ -25,7 +45,7 @@ export class MeasureLiter extends Measure {
 				case 3: return newVal + separator + "MILLILITER" + (this.plural ? "S" : "");
 				case 4: return newVal;
 			}
-		} else if (this.val >= 1500) { //
+		} else if (this.val >= 1500) { // m³
 		    let newVal = this.formatRounding(Math.floor(this.val * 1000 + 1));L
 			switch(this.formatLevel) {
 				case 0: return newVal + separator + "m³";
@@ -34,13 +54,13 @@ export class MeasureLiter extends Measure {
 				case 3: return newVal + separator + "CUBIC METER" + (this.plural ? "S" : "");
 				case 4: return newVal;
 			}
-		} else if (this.val >= 1) { // L
+		} else if (this.val >= 0.9995) { // L
 			switch(this.formatLevel) {
-				case 0: return this.formatRounding(roundMe(this.val)) + separator + "L";
-				case 1: return this.formatRounding(roundMe(this.val)) + separator + "liter" + (this.plural ? "s" : "");
-				case 2: return this.formatRounding(roundMe(this.val)) + separator + "Liter" + (this.plural ? "s" : "");
-				case 3: return this.formatRounding(roundMe(this.val)) + separator + "LITER" + (this.plural ? "S" : "");
-				case 4: return this.formatRounding(roundMe(this.val));
+				case 0: return roundMe(this.val) + separator + "L";
+				case 1: return roundMe(this.val) + separator + "liter" + (this.plural ? "s" : "");
+				case 2: return roundMe(this.val) + separator + "Liter" + (this.plural ? "s" : "");
+				case 3: return roundMe(this.val) + separator + "LITER" + (this.plural ? "S" : "");
+				case 4: return roundMe(this.val);
 			}
 		}
 	}

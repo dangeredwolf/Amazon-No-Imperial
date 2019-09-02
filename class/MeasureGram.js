@@ -32,19 +32,19 @@ export class MeasureGram extends Measure {
 		} else if (this.val >= 1000) { // kg
 			let newVal = this.val / 1000;
 			switch(this.formatLevel) {
-				case 0: return roundMe(newVal) + separator + "kg";
-				case 1: return roundMe(newVal) + separator + "kilogram" + (this.plural ? "s" : "");
-				case 2: return roundMe(newVal) + separator + "Kilogram" + (this.plural ? "s" : "");
-				case 3: return roundMe(newVal) + separator + "KILOGRAM" + (this.plural ? "S" : "");
-				case 4: return roundMe(newVal);
+				case 0: return this.formatRounding(roundMe(newVal)) + separator + "kg";
+				case 1: return this.formatRounding(roundMe(newVal)) + separator + "kilogram" + (this.plural ? "s" : "");
+				case 2: return this.formatRounding(roundMe(newVal)) + separator + "Kilogram" + (this.plural ? "s" : "");
+				case 3: return this.formatRounding(roundMe(newVal)) + separator + "KILOGRAM" + (this.plural ? "S" : "");
+				case 4: return this.formatRounding(roundMe(newVal));
 			}
 		} else { // otherwise g
 			switch(this.formatLevel) {
-				case 0: return this.roundGram(this.val) + separator + "g";
-				case 1: return this.roundGram(this.val) + separator + "gram" + (this.plural ? "s" : "");
-				case 2: return this.roundGram(this.val) + separator + "Gram" + (this.plural ? "s" : "");
-				case 3: return this.roundGram(this.val) + separator + "GRAM" + (this.plural ? "S" : "");
-				case 4: return this.roundGram(this.val);
+				case 0: return this.formatRounding(this.roundGram(this.val)) + separator + "g";
+				case 1: return this.formatRounding(this.roundGram(this.val)) + separator + "gram" + (this.plural ? "s" : "");
+				case 2: return this.formatRounding(this.roundGram(this.val)) + separator + "Gram" + (this.plural ? "s" : "");
+				case 3: return this.formatRounding(this.roundGram(this.val)) + separator + "GRAM" + (this.plural ? "S" : "");
+				case 4: return this.formatRounding(this.roundGram(this.val));
 			}
 		}
 	}

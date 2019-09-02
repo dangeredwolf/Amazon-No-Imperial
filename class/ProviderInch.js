@@ -5,7 +5,7 @@ export class ProviderInch extends Provider {
 
 	constructor() {
 		super();
-		this.regexFind = /[\d\.]+[\.\-\s]?inche?s?|[\d\.]+[\.\-]? ?(in|\"|\'\'|”)(?!-)|[\d\.]+(?=[\s\-]{0,5}(x|to|by|or|and|-|\*|\/)[\dtobyrxan\s\/\.\*\+-]+inch)|[\d\.]+(?=\-\d+\s?inch)|[\d\.]+\s?in$/gi;
+		this.regexFind = /(?<!\#)[\d\.]+[\.\-\s]?inche?s?|(?<![\#\d])[\d\.]{1,3}[\.\-]? ?(in|\"|\'\'|”)(?!-)|[\d\.]+(?=[\s\-]{0,5}(x|to|by|or|and|-|\*|\/)[\dtobyrxan\s\/\.\*\+-]+in(ch)?)|[\d\.]+(?=\-\d+\s?inch)|[\d\.]+\s?in$/gi;
 		this.regexUppercase = /INCH/g;
 		this.regexCapitalized = /Inch/g;
 		this.regexLowercase = /inch/g;
@@ -14,6 +14,9 @@ export class ProviderInch extends Provider {
 	}
 
 	convert(num) {
+		if (num > 1700) {
+			throw "no years >:("
+		}
 		return new MeasureMeter(num * 0.0254);
 	}
 

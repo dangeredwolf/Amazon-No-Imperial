@@ -87,6 +87,7 @@ let excludeStr =
 ".abb-option>.a-list-item," +
 ".a-radio," +
 ".a-icon-star," +
+".prodDetTable," +
 "#SalesRank," +
 "#SalesRank>*";
 let matchStrInline = ".a-list-item,.selection,.a-dropdown-item";
