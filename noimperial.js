@@ -90,6 +90,9 @@ let excludeStr =
 ".prodDetTable," +
 "#SalesRank," +
 "#SalesRank>*";
+
+let useHTMLReplace = "p";
+
 let matchStrInline = ".a-list-item,.selection,.a-dropdown-item";
 let disabled = false;
 let pollingRate = 1000; // 1s
@@ -216,7 +219,13 @@ function metricateObj(obj, forceFluid) {
 			if ($.inArray(b.tagName, g_bannedtags) !== -1 ) return;
 
 			if (canMetricate(b.textContent))
-				b.textContent = metricateStr(b.textContent, forceFluid)
+
+				if (jQuery(b).is(useHTMLReplace)) {
+					b.innerHTML = metricateStr(b.innerHTML, forceFluid)
+				} else {
+
+					b.textContent = metricateStr(b.textContent, forceFluid)
+				}
 				//jQuery(b).html(metricateStr(jQuery(b).html()))
 			} else {
 				metricateObj(jQuery(b), forceFluid);
