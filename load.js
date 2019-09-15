@@ -8,7 +8,7 @@
 
 var browser = browser || chrome;
 
-console.log("Bootstrapping noimperial");
+console.log("Bootstrapping MetricAmazon");
 
 function checkIfHeadReady() {
 
@@ -34,7 +34,7 @@ function checkIfHeadReady() {
 
 	var injectScript2 = document.createElement("script");
 	injectScript2.setAttribute("type","module");
-	injectScript2.src = browser.extension.getURL("noimperial.js");
+	injectScript2.src = browser.extension.getURL("MetricAmazon.js");
 	document.head.appendChild(injectScript2);
 
 }
