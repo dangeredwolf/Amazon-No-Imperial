@@ -20,7 +20,7 @@
 
   "content_scripts": [
     {
-      "matches": ["https://*.amazon.com/*"],
+      "matches": ["https://*.amazon.com/*","https://*.amazon.ca/*","https://*.amazon.co.uk/*"],
       "js": ["load.js"],
       "run_at": "document_start"
     }
@@ -35,7 +35,7 @@
   },
 
   "web_accessible_resources": [
-    "noimperial.js",
+    "MetricAmazon.js",
     "jquery.min.js",
     "class/*.js"
   ],
