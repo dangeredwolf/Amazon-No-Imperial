@@ -53,11 +53,12 @@ export class Provider {
 					plural = true;
 				}
 
-				let tmp = result.replace(this.regexPlus,"").match(this.regexMatchDigit);
+				let tmp = result.replace(this.regexPlus,"")
+				let tmp2 = tmp.match(this.regexMatchDigit);
 				let thing;
 
 				try {
-					thing = this.convert(parseFloat(tmp))
+					thing = this.convert(parseFloat(tmp2))
 				} catch(e) {}
 
 				if (typeof thing === "undefined") {

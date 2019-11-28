@@ -37,6 +37,8 @@ import { ProviderPint } from "./class/ProviderPint.js";
 import { ProviderCup } from "./class/ProviderCup.js";
 import { ProviderFluidOunce } from "./class/ProviderFluidOunce.js";
 
+import { ProviderPoundPaper } from "./class/ProviderPoundPaper.js";
+
 import { ProviderPound } from "./class/ProviderPound.js";
 import { ProviderOunce } from "./class/ProviderOunce.js";
 
@@ -51,7 +53,56 @@ import { ProviderPSI } from "./class/ProviderPSI.js";
 import { ProviderFraction } from "./class/ProviderFraction.js";
 
 let baseUrl;
-let matchStr = ".askAnswersAndComments span,span.a-size-base-plus.a-color-base.a-text-normal,td.bucket>.content>ul>li,.size-weight>td.value,.shipping-weight>td.value,.textContainer__text,.a-dropdown-item,.aplus-module-wrapper>.apm-sidemodule,p,.a-expander-content,.sims-fbt-checkbox-label>span:not(.sims-fbt-this-item),.aplus-module-wrapper tbody>tr>td p,title,.shelf-label-variant-name,#aplus,#importantInformation .content,.textContainer__text,#hero-quick-promo a,#product-specification-table td,.a-color-price,.sponsored-products-truncator-truncated,.twisterShelf_swatch_text,.a-color-price>span,.a-list-item,.disclaim>strong,.content li:not(#SalesRank),.giveaway-product-title span,.a-size-base-plus,.description,#productDescription,.p13n-sc-truncated,.a-size-base,#productTitle,.a-row>.selection,.a-button-text .a-size-base,.a-link-normal,.a-spacing-base,.ivVariations,#ivTitle,.a-spacing-mini,#prodDetails strong,#productDescription strong";
+
+let matchIgnoreDataMetricated = ".a-dropdown-prompt";
+
+let matchStr =
+".askAnswersAndComments span," +
+"p13n-sc-line-clamp-1," +
+"span.a-size-base-plus.a-color-base.a-text-normal," +
+"td.bucket>.content>ul>li," +
+".size-weight>td.value," +
+".shipping-weight>td.value," +
+".textContainer__text," +
+".a-dropdown-item," +
+".aplus-module-wrapper>.apm-sidemodule," +
+"p," +
+".a-expander-content," +
+".sims-fbt-checkbox-label>span:not(.sims-fbt-this-item)," +
+".aplus-module-wrapper tbody>tr>td p," +
+"title," +
+".shelf-label-variant-name," +
+"#aplus," +
+"#importantInformation .content," +
+".textContainer__text," +
+"#hero-quick-promo a," +
+"#product-specification-table td," +
+".a-color-price," +
+".sponsored-products-truncator-truncated," +
+".twisterShelf_swatch_text," +
+".a-dropdown-prompt," +
+".a-color-price>span," +
+".a-list-item," +
+".disclaim>strong," +
+".content li:not(#SalesRank)," +
+".giveaway-product-title span," +
+".a-size-base-plus," +
+".description," +
+"#productDescription," +
+".p13n-sc-truncate," +
+".p13n-sc-truncated," +
+".a-size-base," +
+"#productTitle," +
+".a-row>.selection," +
+".a-button-text .a-size-base," +
+".a-link-normal," +
+".a-spacing-base," +
+".ivVariations," +
+"#ivTitle," +
+".a-spacing-mini," +
+"#prodDetails strong," +
+"#productDescription strong";
+
 let excludeStr =
 // ".a-expander-content," +
 // ".a-expander-container," +
@@ -69,6 +120,7 @@ let excludeStr =
 ".feed-carousel-card>span," +
 ".feed-carousel-card>span>a," +
 ".feed-carousel-card," +
+"span[class='']," +
 ".feed-carousel-shelf," +
 ".issuance-banner a," +
 "span[data-component-type=\"s-in-cart-badge-component\"]," +
@@ -155,6 +207,8 @@ function metricateStr(str, forceFluid) {
 	str = new ProviderPerFluidOunce().find(str);
 	str = new ProviderFluidOunce().find(str);
 
+	str = new ProviderPoundPaper().find(str);
+
 	str = new ProviderPound().find(str);
 
 	if (fluid) {
@@ -169,6 +223,8 @@ function metricateStr(str, forceFluid) {
 	str = new ProviderFahrenheit().find(str);
 	str = new ProviderBTU().find(str.replace(/K(?=(\s+btu))/gi,"000"));
 	str = new ProviderPSI().find(str);
+
+	str = str.replace(/8.5 ?(x|by|\*) ?11/g,"215 mm x 280 mm")
 
 	if (str === oldStr) {
 		return superOldString;
@@ -246,13 +302,13 @@ function onjQueryAvailable() {
 		return;
 	}
 
-	if ($("#productTitle").length <= 0 && isProductPage) {
+	if (jQuery("#productTitle").length <= 0 && isProductPage) {
 		console.log("waiting for product title...");
 		setTimeout(onjQueryAvailable,10);
 		return;
 	}
 
-	let title = $("#productTitle").html();
+	let title = jQuery("#productTitle").html();
 
 	// We have to do some inferencing because "ounce" is ambiguous between fluid ounce and ounce
 	if (isProductPage && checkStringForFluid(title)) {
@@ -277,7 +333,9 @@ function onjQueryAvailable() {
 					return;
 				}
 				metricateObj(jQuery(b),isFluid && jQuery(b).is(matchStrInline));
-				$(b).attr("data-metricated","true")
+				if (!jQuery(b).is(matchIgnoreDataMetricated)) {
+					jQuery(b).attr("data-metricated","true")
+				}
 			}
 		)
 	},pollingRate)

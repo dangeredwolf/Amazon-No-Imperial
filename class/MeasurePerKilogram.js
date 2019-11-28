@@ -13,6 +13,10 @@ export class MeasurePerKilogram extends MeasureGram {
 		if (typeof this.val === "undefined") {
 			throw "val is undefined!!"
 		}
+		if (this.val > 500) {
+			// hmmm... over $500/kg? odd...
+			debugger;
+		}
 		if (this.val > 100) { // over $100 / kg
 			return ("($" + roundMe100(this.val/10) + " / 100g)");
 		} else {

@@ -11,7 +11,7 @@ export class ProviderPer extends Provider {
 		this.regexLowercase = /(?!)/g;
 		this.regexAbbrev = /./g;
 		this.regexPlural = /(?!)/g;
-		this.regexMatchDigit = /[\d\.]+(?=  ?\/)/g;
+		this.regexMatchDigit = /[\d\.]+(?= ? ?\/)/g;
 		this.matchPer = true;
 	}
 

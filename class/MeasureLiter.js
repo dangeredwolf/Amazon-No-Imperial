@@ -17,6 +17,7 @@ export class MeasureLiter extends Measure {
 			178:180,
 			198:200,
 			199:200,
+			202:200,
 			237:240,
 			249:250,
 			252:250,
