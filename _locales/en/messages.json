@@ -1,5 +1,26 @@
 {
 	"description":{
 		"message":"Use Amazon without the baggage of Imperial units."
+	},
+	"improve_onamazon":{
+		"message":"Or, tell us how we can improve the extension in general."
+	},
+	"improve_global":{
+		"message":"Tell us how we can improve the extension in general."
+	},
+	"is_there_a_problem":{
+		"message":"Having a problem with this page?"
+	},
+	"welcome":{
+		"message":"Welcome to <b>Metric Amazon</b>, the extension where we make Amazon use the metric system."
+	},
+	"enable_label":{
+		"message":"Enable Extension"
+	},
+	"page_issue":{
+		"message":"Report Page Issue"
+	},
+	"send_feedback":{
+		"message":"Send Feedback"
 	}
 }

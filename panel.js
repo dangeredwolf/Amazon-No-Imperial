@@ -20,6 +20,13 @@ function init() {
 		});
 
 	})
+
+	$("#enable_label").text(chrome.i18n.getMessage("enable_label"));
+	$("#is_there_a_problem").text(chrome.i18n.getMessage("is_there_a_problem"));
+	$("#welcome").html(chrome.i18n.getMessage("welcome"));
+	$("#page_issue").html(chrome.i18n.getMessage("page_issue"));
+	$("#improve_ext").html(chrome.i18n.getMessage("improve_global"));
+	$("#send_feedback").html(chrome.i18n.getMessage("send_feedback"));
 }
 
 chrome.storage.sync.get({"enabled":"true"},(i) => {
@@ -32,6 +39,9 @@ chrome.storage.sync.get({"enabled":"true"},(i) => {
 chrome.tabs.query({active:true,currentWindow:true},(a) => {
 	if (a[0].url.match(/https?\:\/\/((\w+)?\.?)amazon.\w+/g) === null) {
 		$("#page_issue,#page_issue_text").remove();
+		$("#improve_ext").text(chrome.i18n.getMessage("improve_global"));
+	} else {
+		$("#improve_ext").text(chrome.i18n.getMessage("improve_onamazon"));
 	}
 
 });
