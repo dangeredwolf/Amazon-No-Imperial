@@ -100,6 +100,7 @@ let matchStr =
 ".ivVariations," +
 "#ivTitle," +
 ".a-spacing-mini," +
+".a-dropdown-link," +
 "#prodDetails strong," +
 "#productDescription strong";
 
@@ -129,6 +130,7 @@ let excludeStr =
 ".sims-fbt-image-box," +
 ".zg-text-center-align," +
 // ".a-section," +
+".a-dropdown-container," +
 ".issuance-banner li," +
 "#ap-options," +
 "[data-action=\"main-image-click\"]," +
