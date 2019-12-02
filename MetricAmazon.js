@@ -106,6 +106,8 @@ let matchStr =
 let excludeStr =
 // ".a-expander-content," +
 // ".a-expander-container," +
+".a-color-secondary," +
+".a-unordered-list.a-nostyle.a-vertical," +
 ".a-text-beside-button," +
 ".twister-dropdown-highlight," +
 "#variation_size_name," +
