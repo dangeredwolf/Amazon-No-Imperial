@@ -5,7 +5,7 @@ export class ProviderBTU extends Provider {
 
 	constructor() {
 		super();
-		this.regexFind = /[\d\.]+[\s\-]+(btu)(?!\w)|[\d\.]+(?=[\s]{0,4}(x|to|by|or|and|\/|\-)[\d\-tobyrxan\s\/\.]+(btu))/gi;
+		this.regexFind = /[\d\.]+[\s\-]{0,1}(btu)(?!\w)|[\d\.]+(?=[\s]{0,4}(x|to|by|or|and|\/|\-)[\d\-tobyrxan\s\/\.]+(btu))/gi;
 		this.regexUppercase = /(?!)/g;
 		this.regexCapitalized = /(?!)/g;
 		this.regexLowercase = /(?!)/g;
